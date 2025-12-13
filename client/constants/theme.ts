@@ -1,30 +1,53 @@
 import { Platform } from "react-native";
 
-const tintColorLight = "#007AFF";
-const tintColorDark = "#0A84FF";
-
+// ClearNowX Design System
 export const Colors = {
+  // Primary brand colors
+  background: "#0B0C0F",
+  accent: "#7DF9FF",
+  accentDim: "rgba(125, 249, 255, 0.6)",
+  
+  // Glass effects
+  glassWhite: "rgba(255, 255, 255, 0.20)",
+  glassBorder: "rgba(255, 255, 255, 0.10)",
+  glassHighlight: "rgba(255, 255, 255, 0.05)",
+  
+  // Text colors
+  textPrimary: "#FFFFFF",
+  textSecondary: "rgba(255, 255, 255, 0.7)",
+  textTertiary: "rgba(255, 255, 255, 0.5)",
+  textDisabled: "rgba(255, 255, 255, 0.3)",
+  
+  // Status colors
+  success: "#4ADE80",
+  warning: "#FBBF24",
+  error: "#EF4444",
+  
+  // Lock overlay
+  lockOverlay: "rgba(0, 0, 0, 0.6)",
+  
+  // Legacy theme support
   light: {
     text: "#11181C",
     buttonText: "#FFFFFF",
     tabIconDefault: "#687076",
-    tabIconSelected: tintColorLight,
-    link: "#007AFF",
-    backgroundRoot: "#FFFFFF", // Elevation 0
-    backgroundDefault: "#F2F2F2", // Elevation 1
-    backgroundSecondary: "#E6E6E6", // Elevation 2
-    backgroundTertiary: "#D9D9D9", // Elevation 3
+    tabIconSelected: "#7DF9FF",
+    link: "#7DF9FF",
+    backgroundRoot: "#0B0C0F",
+    backgroundDefault: "#0B0C0F",
+    backgroundSecondary: "#151618",
+    backgroundTertiary: "#1F2123",
   },
   dark: {
-    text: "#ECEDEE",
-    buttonText: "#FFFFFF",
-    tabIconDefault: "#9BA1A6",
-    tabIconSelected: tintColorDark,
-    link: "#0A84FF",
-    backgroundRoot: "#1F2123", // Elevation 0
-    backgroundDefault: "#2A2C2E", // Elevation 1
-    backgroundSecondary: "#353739", // Elevation 2
-    backgroundTertiary: "#404244", // Elevation 3
+    text: "#FFFFFF",
+    buttonText: "#0B0C0F",
+    tabIconDefault: "rgba(255, 255, 255, 0.5)",
+    tabIconSelected: "#7DF9FF",
+    link: "#7DF9FF",
+    backgroundRoot: "#0B0C0F",
+    backgroundDefault: "#0B0C0F",
+    backgroundSecondary: "#151618",
+    backgroundTertiary: "#1F2123",
   },
 };
 
@@ -38,8 +61,11 @@ export const Spacing = {
   "3xl": 32,
   "4xl": 40,
   "5xl": 48,
+  "6xl": 64,
+  "7xl": 80,
+  "8xl": 96,
   inputHeight: 48,
-  buttonHeight: 52,
+  buttonHeight: 56,
 };
 
 export const BorderRadius = {
@@ -54,52 +80,70 @@ export const BorderRadius = {
 };
 
 export const Typography = {
+  // Oversized display for storage stats (64-96px)
+  display: {
+    fontSize: 72,
+    fontWeight: "700" as const,
+    letterSpacing: -2,
+  },
+  displayLarge: {
+    fontSize: 96,
+    fontWeight: "700" as const,
+    letterSpacing: -3,
+  },
+  // Headlines
   h1: {
     fontSize: 32,
-    lineHeight: 40,
     fontWeight: "700" as const,
+    letterSpacing: -0.5,
   },
   h2: {
     fontSize: 28,
-    lineHeight: 36,
     fontWeight: "700" as const,
+    letterSpacing: -0.3,
   },
   h3: {
     fontSize: 24,
-    lineHeight: 32,
     fontWeight: "600" as const,
   },
   h4: {
     fontSize: 20,
-    lineHeight: 28,
     fontWeight: "600" as const,
   },
+  // Body text
   body: {
     fontSize: 16,
-    lineHeight: 24,
+    fontWeight: "400" as const,
+  },
+  bodyLarge: {
+    fontSize: 18,
     fontWeight: "400" as const,
   },
   small: {
     fontSize: 14,
-    lineHeight: 20,
     fontWeight: "400" as const,
+  },
+  caption: {
+    fontSize: 12,
+    fontWeight: "500" as const,
+    letterSpacing: 0.5,
   },
   link: {
     fontSize: 16,
-    lineHeight: 24,
-    fontWeight: "400" as const,
+    fontWeight: "500" as const,
+  },
+  button: {
+    fontSize: 17,
+    fontWeight: "600" as const,
+    letterSpacing: 0.3,
   },
 };
 
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
     sans: "system-ui",
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
     serif: "ui-serif",
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
     rounded: "ui-rounded",
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
     mono: "ui-monospace",
   },
   default: {
@@ -111,8 +155,33 @@ export const Fonts = Platform.select({
   web: {
     sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     serif: "Georgia, 'Times New Roman', serif",
-    rounded:
-      "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
+    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
+
+// Glass effect constants
+export const GlassEffects = {
+  blurIntensity: 30,
+  cardOpacity: 0.20,
+  borderWidth: 1,
+};
+
+// Animation timing
+export const AnimationConfig = {
+  spring: {
+    damping: 15,
+    stiffness: 150,
+    mass: 1,
+  },
+  springFast: {
+    damping: 20,
+    stiffness: 300,
+    mass: 0.8,
+  },
+  duration: {
+    fast: 200,
+    normal: 300,
+    slow: 500,
+  },
+};

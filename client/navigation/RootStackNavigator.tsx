@@ -1,34 +1,43 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import MainTabNavigator from "@/navigation/MainTabNavigator";
-import ModalScreen from "@/screens/ModalScreen";
-import { useScreenOptions } from "@/hooks/useScreenOptions";
+import SplashScreen from "@/screens/SplashScreen";
+import ScanScreen from "@/screens/ScanScreen";
+import ResultsScreen from "@/screens/ResultsScreen";
+import PaywallScreen from "@/screens/PaywallScreen";
+import SuccessScreen from "@/screens/SuccessScreen";
 
 export type RootStackParamList = {
-  Main: undefined;
-  Modal: undefined;
+  Splash: undefined;
+  Scan: undefined;
+  Results: undefined;
+  Paywall: undefined;
+  Success: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootStackNavigator() {
-  const screenOptions = useScreenOptions();
-
   return (
-    <Stack.Navigator screenOptions={screenOptions}>
+    <Stack.Navigator
+      initialRouteName="Splash"
+      screenOptions={{
+        headerShown: false,
+        animation: "fade",
+        contentStyle: { backgroundColor: "#0B0C0F" },
+      }}
+    >
+      <Stack.Screen name="Splash" component={SplashScreen} />
+      <Stack.Screen name="Scan" component={ScanScreen} />
+      <Stack.Screen name="Results" component={ResultsScreen} />
       <Stack.Screen
-        name="Main"
-        component={MainTabNavigator}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Modal"
-        component={ModalScreen}
+        name="Paywall"
+        component={PaywallScreen}
         options={{
-          presentation: "modal",
-          headerTitle: "Modal",
+          presentation: "transparentModal",
+          animation: "slide_from_bottom",
         }}
       />
+      <Stack.Screen name="Success" component={SuccessScreen} />
     </Stack.Navigator>
   );
 }
