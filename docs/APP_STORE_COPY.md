@@ -104,6 +104,22 @@ ClearNowX isn't just another storage cleaner. It's a premium utility that combin
 
 ---
 
+## Screenshot Marketing Copy
+
+### Screenshot 1 - Splash/Intro
+**Heading:** Instant **storage** cleanup
+**Subheading:** Powered by premium intelligence
+
+### Screenshot 2 - Scan Progress
+**Heading:** Watch your storage **get reclaimed**
+**Subheading:** Real-time analysis
+
+### Screenshot 3 - Success/Results
+**Heading:** Keep more of what **matters**
+**Subheading:** Your space is optimized
+
+---
+
 ## Release Notes (Sample)
 
 ### Version 1.0.0
