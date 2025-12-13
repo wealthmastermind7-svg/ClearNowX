@@ -142,9 +142,9 @@ export default function ResultsScreen() {
                 </View>
 
                 {!isPremium && (
-                  <View style={styles.lockOverlay}>
+                  <View style={styles.lockBadge}>
                     <Animated.View style={lockAnimatedStyle}>
-                      <Feather name="lock" size={20} color={Colors.accent} />
+                      <Feather name="lock" size={16} color={Colors.background} />
                     </Animated.View>
                   </View>
                 )}
@@ -245,10 +245,14 @@ const styles = StyleSheet.create({
     ...Typography.h3,
     color: Colors.accent,
   },
-  lockOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
-    borderRadius: BorderRadius.lg,
+  lockBadge: {
+    position: "absolute",
+    top: Spacing.lg,
+    right: Spacing.lg,
+    width: 32,
+    height: 32,
+    borderRadius: BorderRadius.sm,
+    backgroundColor: Colors.accent,
     justifyContent: "center",
     alignItems: "center",
   },
