@@ -52,7 +52,7 @@ storage cleaner, iphone cleanup, cache cleaner, disk cleanup, storage analyzer, 
 ---
 
 ## Support Email
-support@clearnowx.app
+admin@cerolauto.com
 
 ## Privacy Policy URL
 https://clearnowx.app/privacy-policy
@@ -68,7 +68,7 @@ https://clearnowx.app
 
 ClearNowX helps you clean up your iPhone and reclaim valuable storage space. Test the beautiful glassmorphic interface, powerful storage analysis, and intelligent cleanup features.
 
-Your feedback shapes our development. Report any issues or suggestions to help us perfect ClearNowX.
+Your feedback shapes our development. Report any issues or suggestions to admin@cerolauto.com to help us perfect ClearNowX.
 
 ---
 

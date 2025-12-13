@@ -110,7 +110,7 @@ We may update this Privacy Policy periodically to reflect changes in our practic
 
 If you have questions about this Privacy Policy or our privacy practices, please contact us:
 
-**Email**: privacy@clearnowx.app
+**Email**: admin@cerolauto.com
 
 **Address**: 
 ClearNowX Support
