@@ -38,16 +38,21 @@
 
 ---
 
-## Screenshot 3: Storage Breakdown
-**Focus**: What the app finds
-**Visual**: 4 horizontal bar elements showing categories
+## Screenshot 3: Storage Breakdown (ACTUAL APP SCREENSHOT)
+**Focus**: What the app finds - Real results screen
+**Visual**: Actual app Results screen showing all 4 storage categories with sizes
 **Headline**: "Find What's Wasting Space"
 **Subheadline**: "Photos, Videos, Cache & More"
+**Actual Content Displayed**:
+- Duplicate Photos - 1.8 GB (342 files)
+- Large Videos - 2.4 GB (28 files)
+- Old Downloads - 892 MB (156 files)
+- Cache & Junk - 1.1 GB (1,204 files)
 **Design**:
-- Horizontal storage bars
-- Cyan gradient left edge
-- Different heights = different sizes
-- Glass morphism effect
+- Glass card layout with cyan icons
+- File counts and sizes clearly visible
+- Lock badges on each category
+- "Unlock Cleaning" button at bottom
 
 ---
 
