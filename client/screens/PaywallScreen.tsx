@@ -17,6 +17,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { Colors, Typography, Spacing, BorderRadius } from "@/constants/theme";
 import { ThemedText } from "@/components/ThemedText";
+import { trackPageView, trackEvent } from "@/lib/mixpanel";
 import { GlassCard } from "@/components/GlassCard";
 import { PremiumButton } from "@/components/PremiumButton";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
@@ -70,6 +71,8 @@ export default function PaywallScreen() {
   const blurIntensity = useSharedValue(0);
 
   useEffect(() => {
+    trackPageView("Paywall");
+    trackEvent("Upgrade Viewed");
     modalOpacity.value = withTiming(1, { duration: 300 });
     modalTranslateY.value = withSpring(0, { damping: 20, stiffness: 200 });
     blurIntensity.value = withTiming(50, { duration: 400 });

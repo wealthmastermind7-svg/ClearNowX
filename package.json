@@ -41,6 +41,7 @@
     "expo-web-browser": "~15.0.9",
     "express": "^4.21.2",
     "http-proxy-middleware": "^3.0.5",
+    "mixpanel-browser": "^2.72.0",
     "pg": "^8.16.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",

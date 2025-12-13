@@ -17,6 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Image } from "expo-image";
 import { Colors, Typography, Spacing } from "@/constants/theme";
 import { ThemedText } from "@/components/ThemedText";
+import { trackPageView } from "@/lib/mixpanel";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 type SplashScreenNavigationProp = NativeStackNavigationProp<
@@ -38,6 +39,7 @@ export default function SplashScreen() {
   };
 
   useEffect(() => {
+    trackPageView("Splash");
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     logoOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) });

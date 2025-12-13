@@ -49,3 +49,8 @@ args = "npm run all:dev"
 waitForPort = 8081
 ensurePreviewReachable = "/status"
 
+[userenv]
+
+[userenv.shared]
+EXPO_PUBLIC_MIXPANEL_TOKEN = "44bd711f6b2e287ef66139dadf41fed8"
+

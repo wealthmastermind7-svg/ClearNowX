@@ -17,6 +17,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { Colors, Typography, Spacing, BorderRadius } from "@/constants/theme";
 import { ThemedText } from "@/components/ThemedText";
+import { trackPageView, trackEvent } from "@/lib/mixpanel";
 import { PremiumButton } from "@/components/PremiumButton";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
@@ -38,6 +39,8 @@ export default function SuccessScreen() {
   const buttonOpacity = useSharedValue(0);
 
   useEffect(() => {
+    trackPageView("Success");
+    trackEvent("Premium Activated", { space_freed: "6.2 GB" });
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setTimeout(() => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);

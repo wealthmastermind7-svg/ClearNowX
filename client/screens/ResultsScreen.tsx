@@ -16,6 +16,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { Colors, Typography, Spacing, BorderRadius } from "@/constants/theme";
 import { ThemedText } from "@/components/ThemedText";
+import { trackPageView, trackEvent } from "@/lib/mixpanel";
 import { GlassCard } from "@/components/GlassCard";
 import { PremiumButton } from "@/components/PremiumButton";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
@@ -51,6 +52,8 @@ export default function ResultsScreen() {
   const cardsOpacity = useSharedValue(0);
 
   useEffect(() => {
+    trackPageView("Results");
+    trackEvent("Storage Results Viewed", { total_reclaimable: "6.2 GB" });
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
     totalOpacity.value = withTiming(1, { duration: 500 });

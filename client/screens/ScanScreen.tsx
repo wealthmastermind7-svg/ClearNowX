@@ -15,6 +15,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { Colors, Typography, Spacing } from "@/constants/theme";
 import { ThemedText } from "@/components/ThemedText";
+import { trackPageView, trackEvent } from "@/lib/mixpanel";
 import { ProgressRing } from "@/components/ProgressRing";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
@@ -42,6 +43,8 @@ export default function ScanScreen() {
   ];
 
   useEffect(() => {
+    trackPageView("Scan");
+    trackEvent("Scan Started");
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     dotsOpacity.value = withRepeat(
