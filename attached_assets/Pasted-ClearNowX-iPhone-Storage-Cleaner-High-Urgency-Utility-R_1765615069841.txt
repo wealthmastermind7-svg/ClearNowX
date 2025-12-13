@@ -1,0 +1,171 @@
+ClearNowX – iPhone Storage Cleaner (High-Urgency Utility)
+REPLIT AI PROMPT
+
+Create a production-ready Expo monorepo named ClearNowX.
+
+This is an iOS-first premium utility app that helps users instantly identify and clean storage space. The app must feel like a high-end Apple-native product, using iOS glassmorphism, bold oversized typography, haptic feedback, and smooth 60fps animations.
+
+TECH STACK
+
+Expo (latest stable)
+
+TypeScript
+
+expo-blur for glassmorphism
+
+expo-haptics for tactile feedback
+
+expo-av for micro animations
+
+react-native-reanimated (60fps)
+
+RevenueCat for subscriptions
+
+Zustand or Context for state
+
+iOS only configuration
+
+VISUAL DESIGN SYSTEM
+
+Background: deep graphite black (#0B0C0F)
+
+Glass cards: white with 20 percent opacity + blur radius 30
+
+Accent color: neon ice blue (#7DF9FF)
+
+Typography:
+
+Headings and numbers: Zayan Luxury Font
+
+Oversized numeric typography (64–96px for storage stats)
+
+UI style:
+
+Frosted glass panels
+
+Subtle grain overlay
+
+High contrast minimalism
+
+Apple-style motion easing
+
+CORE SCREENS
+1. Splash / Entry
+
+Full-screen blurred background
+
+App name in oversized typography
+
+Micro haptic on load
+
+2. Storage Scan Screen
+
+Large circular progress ring animation
+
+“Scanning Storage…” animated text
+
+Strong haptic when scan starts
+
+Simulated scan progress (no real deletion)
+
+3. Results Screen (LOCKED)
+
+Glass cards showing:
+
+Reclaimable space
+
+Duplicate photos
+
+Large videos
+
+Numeric stats visible
+
+Action buttons blurred and disabled
+
+Subtle pulsing lock icon
+
+4. Paywall Screen
+
+Glassmorphism full-screen modal
+
+Headline:
+“Free up space in under 60 seconds”
+
+Plans:
+
+Monthly $9.99 (7-day free trial, default selected)
+
+Annual $29.99 (Best Value badge)
+
+Weekly $4.99 (More options)
+
+Haptic feedback on plan selection
+
+RevenueCat purchase flow
+
+5. Success Screen
+
+Celebration animation
+
+Strong success haptic
+
+“Cleaning Complete” message
+
+MONETISATION (RevenueCat)
+
+Single entitlement: premium_access
+
+Products:
+
+clearnowx_monthly
+
+clearnowx_annual
+
+clearnowx_weekly
+
+Monthly has 7-day free trial
+
+Annual has no trial
+
+Weekly has no trial
+
+Entitlement gates:
+
+Cleaning actions
+
+Deletion
+
+Repeated scans
+
+HAPTIC DESIGN
+
+Light haptic on tap
+
+Medium haptic on scan start
+
+Heavy haptic on unlock and success
+
+No vibration spam
+
+ANIMATIONS
+
+60fps progress ring
+
+Smooth card entrance transitions
+
+Paywall slide-up with blur intensification
+
+Button press scale animation
+
+FILE STRUCTURE
+
+/apps/mobile
+/components/glass
+/components/typography
+/screens
+/services/revenuecat
+/hooks/useEntitlement
+/theme
+
+Build the app so it feels expensive, fast, and decisive.
+No placeholder UI. Everything should feel launch-read
