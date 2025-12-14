@@ -443,8 +443,7 @@ const styles = StyleSheet.create({
   },
   planCard: {
     padding: Spacing.lg,
-    position: "relative",
-    overflow: "visible",
+    borderRadius: 20,
   },
   bestValueBadge: {
     position: "absolute",
