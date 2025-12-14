@@ -31,7 +31,7 @@ export function GlassCard({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xl,
     overflow: "hidden",
     borderWidth: GlassEffects.borderWidth,
     borderColor: Colors.glassBorder,
