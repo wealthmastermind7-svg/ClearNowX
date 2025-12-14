@@ -83,13 +83,38 @@ export default function FilePreviewScreen() {
 
   const loadAssets = async () => {
     try {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Permission Required",
-          "Please allow access to your photos to scan for files.",
-          [{ text: "OK", onPress: () => navigation.goBack() }]
-        );
+      const permission = await MediaLibrary.requestPermissionsAsync();
+      if (!permission.granted) {
+        if (permission.status === "denied" && !permission.canAskAgain) {
+          Alert.alert(
+            "Permission Required",
+            "Photo access was denied. Please enable it in Settings to scan your files.",
+            [
+              { text: "Cancel", onPress: () => navigation.goBack(), style: "cancel" },
+              { 
+                text: "Open Settings", 
+                onPress: async () => {
+                  if (Platform.OS !== "web") {
+                    try {
+                      const { Linking } = await import("expo-linking");
+                      await Linking.openSettings();
+                    } catch (e) {
+                      navigation.goBack();
+                    }
+                  } else {
+                    navigation.goBack();
+                  }
+                }
+              },
+            ]
+          );
+        } else {
+          Alert.alert(
+            "Permission Required",
+            "Please allow access to your photos to scan for files.",
+            [{ text: "OK", onPress: () => navigation.goBack() }]
+          );
+        }
         return;
       }
 
@@ -114,6 +139,9 @@ export default function FilePreviewScreen() {
       const assetsWithInfo = await Promise.all(
         mediaAssets.assets.map(async (asset) => {
           const info = await MediaLibrary.getAssetInfoAsync(asset);
+          const estimatedSize = asset.mediaType === "video" 
+            ? asset.duration * 5 * 1024 * 1024 
+            : (asset.width * asset.height * 3) / 8;
           return {
             id: asset.id,
             uri: asset.uri,
@@ -122,7 +150,7 @@ export default function FilePreviewScreen() {
             duration: asset.duration,
             width: asset.width,
             height: asset.height,
-            fileSize: info.localUri ? undefined : 0,
+            fileSize: (info as any).size ?? estimatedSize ?? 3 * 1024 * 1024,
             selected: false,
           };
         })

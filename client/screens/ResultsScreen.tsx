@@ -64,27 +64,48 @@ export default function ResultsScreen() {
 
   const loadStorageData = async () => {
     try {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (Platform.OS === "web") {
+        setStorageData([
+          { id: "1", icon: "image", title: "Duplicate Photos", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
+          { id: "2", icon: "video", title: "Large Videos", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
+          { id: "3", icon: "file", title: "Old Downloads", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
+          { id: "4", icon: "trash-2", title: "Cache & Junk", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
+        ]);
+        setTotalReclaimable("Use Expo Go");
+        setLoading(false);
+        animateIn();
+        return;
+      }
+
+      const permission = await MediaLibrary.requestPermissionsAsync();
       
-      if (status !== "granted") {
-        if (Platform.OS === "web") {
-          setStorageData([
-            { id: "1", icon: "image", title: "Duplicate Photos", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
-            { id: "2", icon: "video", title: "Large Videos", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
-            { id: "3", icon: "file", title: "Old Downloads", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
-            { id: "4", icon: "trash-2", title: "Cache & Junk", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
-          ]);
-          setTotalReclaimable("Use Expo Go");
-          setLoading(false);
-          animateIn();
-          return;
+      if (!permission.granted) {
+        if (permission.status === "denied" && !permission.canAskAgain) {
+          Alert.alert(
+            "Permission Required",
+            "Photo access was denied. Please enable it in Settings to analyze your storage.",
+            [
+              { text: "Cancel", style: "cancel" },
+              { 
+                text: "Open Settings", 
+                onPress: async () => {
+                  try {
+                    const { Linking } = await import("expo-linking");
+                    await Linking.openSettings();
+                  } catch (e) {
+                    // Settings not supported
+                  }
+                }
+              },
+            ]
+          );
+        } else {
+          Alert.alert(
+            "Permission Required",
+            "Please allow access to your photos to analyze storage.",
+            [{ text: "OK" }]
+          );
         }
-        
-        Alert.alert(
-          "Permission Required",
-          "Please allow access to your photos to analyze storage.",
-          [{ text: "OK" }]
-        );
         setLoading(false);
         return;
       }
