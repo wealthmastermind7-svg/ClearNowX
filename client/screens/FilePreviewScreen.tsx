@@ -135,47 +135,58 @@ export default function FilePreviewScreen() {
       const mediaAssets = await MediaLibrary.getAssetsAsync({
         mediaType,
         sortBy: [[sortBy, false]],
-        first: 100,
+        first: 200,
       });
+
+      console.log(`Loaded ${mediaAssets.assets.length} assets for category: ${category}`);
 
       const assetsWithInfo = await Promise.all(
         mediaAssets.assets.map(async (asset) => {
-          const info = await MediaLibrary.getAssetInfoAsync(asset);
-          const estimatedSize = asset.mediaType === "video" 
-            ? asset.duration * 5 * 1024 * 1024 
-            : (asset.width * asset.height * 3) / 8;
-          return {
-            id: asset.id,
-            uri: asset.uri,
-            filename: asset.filename,
-            mediaType: asset.mediaType,
-            duration: asset.duration,
-            width: asset.width,
-            height: asset.height,
-            fileSize: (info as any).size ?? estimatedSize ?? 3 * 1024 * 1024,
-            selected: false,
-          };
+          try {
+            const info = await MediaLibrary.getAssetInfoAsync(asset);
+            const estimatedSize = asset.mediaType === "video" 
+              ? asset.duration * 5 * 1024 * 1024 
+              : (asset.width * asset.height * 3) / 8;
+            return {
+              id: asset.id,
+              uri: asset.uri || "",
+              filename: asset.filename || "unknown",
+              mediaType: asset.mediaType,
+              duration: asset.duration || 0,
+              width: asset.width || 0,
+              height: asset.height || 0,
+              fileSize: (info as any).size ?? estimatedSize ?? 3 * 1024 * 1024,
+              selected: false,
+            };
+          } catch (e) {
+            console.error("Error getting asset info:", e);
+            return null;
+          }
         })
       );
 
-      let filteredAssets = assetsWithInfo;
+      const validAssets = assetsWithInfo.filter((a) => a !== null) as MediaAsset[];
+
+      let filteredAssets = validAssets;
 
       if (category === "Large Videos") {
-        filteredAssets = assetsWithInfo
+        filteredAssets = validAssets
           .filter((a) => a.mediaType === "video" && a.duration > 10)
           .slice(0, 50);
       } else if (category === "Duplicate Photos") {
-        filteredAssets = assetsWithInfo
+        filteredAssets = validAssets
           .filter((a) => a.mediaType === "photo")
           .slice(0, 50);
       } else if (category === "Old Downloads") {
-        filteredAssets = assetsWithInfo.slice(0, 50);
+        filteredAssets = validAssets.slice(0, 50);
       }
 
+      console.log(`Showing ${filteredAssets.length} filtered assets`);
       setAssets(filteredAssets);
       setLoading(false);
     } catch (error) {
       console.error("Error loading assets:", error);
+      Alert.alert("Error", "Failed to load files. Please try again.");
       setLoading(false);
     }
   };
