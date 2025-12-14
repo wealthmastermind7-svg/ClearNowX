@@ -9,12 +9,10 @@ import Animated, {
   withDelay,
   withSpring,
   withSequence,
-  Easing,
-  runOnJS,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { Colors, Typography, Spacing, BorderRadius } from "@/constants/theme";
 import { ThemedText } from "@/components/ThemedText";
 import { trackPageView, trackEvent } from "@/lib/mixpanel";
@@ -26,9 +24,23 @@ type SuccessScreenNavigationProp = NativeStackNavigationProp<
   "Success"
 >;
 
+type SuccessScreenRouteProp = RouteProp<RootStackParamList, "Success">;
+
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+}
+
 export default function SuccessScreen() {
   const navigation = useNavigation<SuccessScreenNavigationProp>();
+  const route = useRoute<SuccessScreenRouteProp>();
   const insets = useSafeAreaInsets();
+  
+  const filesDeleted = route.params?.filesDeleted ?? 0;
+  const spaceFreed = route.params?.spaceFreed ?? 0;
 
   const checkScale = useSharedValue(0);
   const checkOpacity = useSharedValue(0);
@@ -40,7 +52,10 @@ export default function SuccessScreen() {
 
   useEffect(() => {
     trackPageView("Success");
-    trackEvent("Premium Activated", { space_freed: "6.2 GB" });
+    trackEvent("Files Cleaned", { 
+      files_deleted: filesDeleted, 
+      space_freed: formatBytes(spaceFreed) 
+    });
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setTimeout(() => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -122,12 +137,16 @@ export default function SuccessScreen() {
 
         <Animated.View style={[styles.statsSection, statsAnimatedStyle]}>
           <View style={styles.statCard}>
-            <ThemedText style={styles.statValue}>6.2 GB</ThemedText>
+            <ThemedText style={styles.statValue}>
+              {spaceFreed > 0 ? formatBytes(spaceFreed) : "Storage"}
+            </ThemedText>
             <ThemedText style={styles.statLabel}>Space Freed</ThemedText>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statCard}>
-            <ThemedText style={styles.statValue}>1,730</ThemedText>
+            <ThemedText style={styles.statValue}>
+              {filesDeleted > 0 ? filesDeleted.toLocaleString() : "Optimized"}
+            </ThemedText>
             <ThemedText style={styles.statLabel}>Files Cleaned</ThemedText>
           </View>
         </Animated.View>

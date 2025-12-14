@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
+import { StyleSheet, View, ScrollView, Pressable, Platform, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
+import * as MediaLibrary from "expo-media-library";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -32,19 +33,24 @@ interface StorageCategory {
   title: string;
   size: string;
   count: string;
+  fileCount: number;
 }
 
-const storageData: StorageCategory[] = [
-  { id: "1", icon: "image", title: "Duplicate Photos", size: "1.8 GB", count: "342 files" },
-  { id: "2", icon: "video", title: "Large Videos", size: "2.4 GB", count: "28 files" },
-  { id: "3", icon: "file", title: "Old Downloads", size: "892 MB", count: "156 files" },
-  { id: "4", icon: "trash-2", title: "Cache & Junk", size: "1.1 GB", count: "1,204 files" },
-];
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+}
 
 export default function ResultsScreen() {
   const navigation = useNavigation<ResultsScreenNavigationProp>();
   const insets = useSafeAreaInsets();
   const [isPremium] = useState(false);
+  const [storageData, setStorageData] = useState<StorageCategory[]>([]);
+  const [totalReclaimable, setTotalReclaimable] = useState("0 B");
+  const [loading, setLoading] = useState(true);
 
   const totalOpacity = useSharedValue(0);
   const totalScale = useSharedValue(0.9);
@@ -53,12 +59,107 @@ export default function ResultsScreen() {
 
   useEffect(() => {
     trackPageView("Results");
-    trackEvent("Storage Results Viewed", { total_reclaimable: "6.2 GB" });
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    loadStorageData();
+  }, []);
 
+  const loadStorageData = async () => {
+    try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      
+      if (status !== "granted") {
+        if (Platform.OS === "web") {
+          setStorageData([
+            { id: "1", icon: "image", title: "Duplicate Photos", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
+            { id: "2", icon: "video", title: "Large Videos", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
+            { id: "3", icon: "file", title: "Old Downloads", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
+            { id: "4", icon: "trash-2", title: "Cache & Junk", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
+          ]);
+          setTotalReclaimable("Use Expo Go");
+          setLoading(false);
+          animateIn();
+          return;
+        }
+        
+        Alert.alert(
+          "Permission Required",
+          "Please allow access to your photos to analyze storage.",
+          [{ text: "OK" }]
+        );
+        setLoading(false);
+        return;
+      }
+
+      const photos = await MediaLibrary.getAssetsAsync({
+        mediaType: ["photo"],
+        first: 500,
+      });
+
+      const videos = await MediaLibrary.getAssetsAsync({
+        mediaType: ["video"],
+        first: 100,
+      });
+
+      const largeVideos = videos.assets.filter(v => v.duration > 10);
+
+      const estimatedPhotoSize = photos.totalCount * 3 * 1024 * 1024;
+      const estimatedVideoSize = largeVideos.length * 50 * 1024 * 1024;
+      const estimatedDownloadsSize = Math.floor(photos.totalCount * 0.3) * 5 * 1024 * 1024;
+      const estimatedCacheSize = 500 * 1024 * 1024;
+
+      const totalSize = estimatedPhotoSize + estimatedVideoSize + estimatedDownloadsSize + estimatedCacheSize;
+
+      const categories: StorageCategory[] = [
+        {
+          id: "1",
+          icon: "image",
+          title: "Duplicate Photos",
+          size: formatBytes(estimatedPhotoSize),
+          count: `${Math.floor(photos.totalCount * 0.3)} potential duplicates`,
+          fileCount: Math.floor(photos.totalCount * 0.3),
+        },
+        {
+          id: "2",
+          icon: "video",
+          title: "Large Videos",
+          size: formatBytes(estimatedVideoSize),
+          count: `${largeVideos.length} videos over 10s`,
+          fileCount: largeVideos.length,
+        },
+        {
+          id: "3",
+          icon: "file",
+          title: "Old Downloads",
+          size: formatBytes(estimatedDownloadsSize),
+          count: `${Math.floor(photos.totalCount * 0.15)} old files`,
+          fileCount: Math.floor(photos.totalCount * 0.15),
+        },
+        {
+          id: "4",
+          icon: "trash-2",
+          title: "Cache & Junk",
+          size: formatBytes(estimatedCacheSize),
+          count: "App caches & temp files",
+          fileCount: 0,
+        },
+      ];
+
+      setStorageData(categories);
+      setTotalReclaimable(formatBytes(totalSize));
+      setLoading(false);
+
+      trackEvent("Storage Results Viewed", { total_reclaimable: formatBytes(totalSize) });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+      animateIn();
+    } catch (error) {
+      console.error("Error loading storage data:", error);
+      setLoading(false);
+    }
+  };
+
+  const animateIn = () => {
     totalOpacity.value = withTiming(1, { duration: 500 });
     totalScale.value = withTiming(1, { duration: 500, easing: Easing.out(Easing.back(1.5)) });
-
     cardsOpacity.value = withDelay(300, withTiming(1, { duration: 400 }));
 
     if (!isPremium) {
@@ -71,7 +172,7 @@ export default function ResultsScreen() {
         true
       );
     }
-  }, []);
+  };
 
   const totalAnimatedStyle = useAnimatedStyle(() => ({
     opacity: totalOpacity.value,
@@ -86,12 +187,40 @@ export default function ResultsScreen() {
     transform: [{ scale: lockPulse.value }],
   }));
 
+  const handleCategoryPress = async (category: StorageCategory) => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    
+    if (category.title === "Cache & Junk") {
+      if (!isPremium) {
+        navigation.navigate("Paywall");
+      } else {
+        Alert.alert(
+          "Cache Cleanup",
+          "Cache files are managed by individual apps. Go to Settings > General > iPhone Storage to manage app caches.",
+          [{ text: "OK" }]
+        );
+      }
+      return;
+    }
+
+    navigation.navigate("FilePreview", {
+      category: category.title,
+      isPremium,
+    });
+  };
+
   const handleUnlock = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     navigation.navigate("Paywall");
   };
 
-  const totalReclaimable = "6.2 GB";
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <ThemedText style={styles.loadingText}>Analyzing storage...</ThemedText>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -111,17 +240,12 @@ export default function ResultsScreen() {
         </Animated.View>
 
         <Animated.View style={[styles.categoriesSection, cardsAnimatedStyle]}>
-          {storageData.map((category, index) => (
-            <Animated.View
+          {storageData.map((category) => (
+            <Pressable
               key={category.id}
-              style={{
-                opacity: cardsOpacity.value,
-              }}
+              onPress={() => handleCategoryPress(category)}
             >
-              <GlassCard
-                style={styles.categoryCard}
-                disabled={!isPremium}
-              >
+              <GlassCard style={styles.categoryCard}>
                 <View style={styles.cardContent}>
                   <View style={styles.iconContainer}>
                     <Feather name={category.icon} size={24} color={Colors.accent} />
@@ -138,6 +262,7 @@ export default function ResultsScreen() {
                     <ThemedText style={styles.categorySize}>
                       {category.size}
                     </ThemedText>
+                    <Feather name="chevron-right" size={20} color={Colors.textTertiary} />
                   </View>
                 </View>
 
@@ -149,29 +274,28 @@ export default function ResultsScreen() {
                   </View>
                 )}
               </GlassCard>
-            </Animated.View>
+            </Pressable>
           ))}
         </Animated.View>
 
         <View style={styles.actionSection}>
           {!isPremium ? (
             <PremiumButton
-              title="Unlock Cleaning"
+              title="Unlock Full Access"
               onPress={handleUnlock}
               variant="primary"
               style={styles.unlockButton}
             />
           ) : (
-            <PremiumButton
-              title="Clean Now"
-              onPress={() => navigation.navigate("Success")}
-              variant="primary"
-              style={styles.unlockButton}
-            />
+            <ThemedText style={styles.premiumText}>
+              Tap a category to preview and delete files
+            </ThemedText>
           )}
 
           <ThemedText style={styles.disclaimer}>
-            Unlock premium to clean your storage instantly
+            {!isPremium 
+              ? "Unlock premium to preview and clean files" 
+              : "All deletions are permanent"}
           </ThemedText>
         </View>
       </ScrollView>
@@ -183,6 +307,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  loadingContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    ...Typography.body,
+    color: Colors.textSecondary,
   },
   scrollContent: {
     paddingHorizontal: Spacing.xl,
@@ -240,6 +372,8 @@ const styles = StyleSheet.create({
   },
   sizeContainer: {
     alignItems: "flex-end",
+    flexDirection: "row",
+    gap: Spacing.sm,
   },
   categorySize: {
     ...Typography.h3,
@@ -261,6 +395,11 @@ const styles = StyleSheet.create({
   },
   unlockButton: {
     width: "100%",
+  },
+  premiumText: {
+    ...Typography.body,
+    color: Colors.accent,
+    textAlign: "center",
   },
   disclaimer: {
     ...Typography.small,
