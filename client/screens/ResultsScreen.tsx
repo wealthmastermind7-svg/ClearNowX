@@ -21,6 +21,7 @@ import { trackPageView, trackEvent } from "@/lib/mixpanel";
 import { GlassCard } from "@/components/GlassCard";
 import { PremiumButton } from "@/components/PremiumButton";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
+import { usePremium } from "@/context/PremiumContext";
 
 type ResultsScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -47,7 +48,7 @@ function formatBytes(bytes: number): string {
 export default function ResultsScreen() {
   const navigation = useNavigation<ResultsScreenNavigationProp>();
   const insets = useSafeAreaInsets();
-  const [isPremium] = useState(false);
+  const { isPremium } = usePremium();
   const [storageData, setStorageData] = useState<StorageCategory[]>([]);
   const [totalReclaimable, setTotalReclaimable] = useState("0 B");
   const [loading, setLoading] = useState(true);
@@ -226,7 +227,6 @@ export default function ResultsScreen() {
 
     navigation.navigate("FilePreview", {
       category: category.title,
-      isPremium,
     });
   };
 

@@ -26,6 +26,7 @@ import { GlassCard } from "@/components/GlassCard";
 import { PremiumButton } from "@/components/PremiumButton";
 import { trackPageView, trackEvent } from "@/lib/mixpanel";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
+import { usePremium } from "@/context/PremiumContext";
 
 type FilePreviewScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -64,8 +65,9 @@ export default function FilePreviewScreen() {
   const navigation = useNavigation<FilePreviewScreenNavigationProp>();
   const route = useRoute<FilePreviewScreenRouteProp>();
   const insets = useSafeAreaInsets();
+  const { isPremium } = usePremium();
 
-  const { category, isPremium } = route.params;
+  const { category } = route.params;
 
   const [assets, setAssets] = useState<MediaAsset[]>([]);
   const [loading, setLoading] = useState(true);

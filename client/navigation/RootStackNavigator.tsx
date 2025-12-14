@@ -13,7 +13,7 @@ export type RootStackParamList = {
   Results: undefined;
   Paywall: undefined;
   Success: { filesDeleted?: number; spaceFreed?: number } | undefined;
-  FilePreview: { category: string; isPremium: boolean };
+  FilePreview: { category: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

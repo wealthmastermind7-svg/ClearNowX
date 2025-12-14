@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Pressable } from "react-native";
+import { StyleSheet, View, Pressable, Alert, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -7,27 +7,26 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  withDelay,
   withSpring,
-  Easing,
-  runOnJS,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
+import { PurchasesPackage } from "react-native-purchases";
 import { Colors, Typography, Spacing, BorderRadius } from "@/constants/theme";
 import { ThemedText } from "@/components/ThemedText";
 import { trackPageView, trackEvent } from "@/lib/mixpanel";
 import { GlassCard } from "@/components/GlassCard";
 import { PremiumButton } from "@/components/PremiumButton";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
+import { usePremium } from "@/context/PremiumContext";
 
 type PaywallScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   "Paywall"
 >;
 
-interface PlanOption {
+interface PlanDisplay {
   id: string;
   name: string;
   price: string;
@@ -35,9 +34,10 @@ interface PlanOption {
   badge?: string;
   trial?: string;
   isDefault?: boolean;
+  package?: PurchasesPackage;
 }
 
-const plans: PlanOption[] = [
+const fallbackPlans: PlanDisplay[] = [
   {
     id: "monthly",
     name: "Monthly",
@@ -64,7 +64,11 @@ const plans: PlanOption[] = [
 export default function PaywallScreen() {
   const navigation = useNavigation<PaywallScreenNavigationProp>();
   const insets = useSafeAreaInsets();
-  const [selectedPlan, setSelectedPlan] = useState("monthly");
+  const { offerings, purchase, restore } = usePremium();
+  
+  const [selectedPlanId, setSelectedPlanId] = useState("monthly");
+  const [isLoading, setIsLoading] = useState(false);
+  const [plans, setPlans] = useState<PlanDisplay[]>(fallbackPlans);
 
   const modalOpacity = useSharedValue(0);
   const modalTranslateY = useSharedValue(100);
@@ -78,6 +82,52 @@ export default function PaywallScreen() {
     blurIntensity.value = withTiming(50, { duration: 400 });
   }, []);
 
+  useEffect(() => {
+    if (offerings?.availablePackages) {
+      const mappedPlans: PlanDisplay[] = offerings.availablePackages.map((pkg) => {
+        const identifier = pkg.identifier.toLowerCase();
+        let name = "Plan";
+        let period = "";
+        let badge: string | undefined;
+        let trial: string | undefined;
+        let isDefault = false;
+
+        if (identifier.includes("monthly") || identifier.includes("month")) {
+          name = "Monthly";
+          period = "/month";
+          trial = pkg.product.introPrice ? "7-day free trial" : undefined;
+          isDefault = true;
+        } else if (identifier.includes("annual") || identifier.includes("year")) {
+          name = "Annual";
+          period = "/year";
+          badge = "Best Value";
+        } else if (identifier.includes("weekly") || identifier.includes("week")) {
+          name = "Weekly";
+          period = "/week";
+        }
+
+        return {
+          id: pkg.identifier,
+          name,
+          price: pkg.product.priceString,
+          period,
+          badge,
+          trial,
+          isDefault,
+          package: pkg,
+        };
+      });
+
+      if (mappedPlans.length > 0) {
+        setPlans(mappedPlans);
+        const defaultPlan = mappedPlans.find((p) => p.isDefault);
+        if (defaultPlan) {
+          setSelectedPlanId(defaultPlan.id);
+        }
+      }
+    }
+  }, [offerings]);
+
   const modalAnimatedStyle = useAnimatedStyle(() => ({
     opacity: modalOpacity.value,
     transform: [{ translateY: modalTranslateY.value }],
@@ -89,7 +139,7 @@ export default function PaywallScreen() {
 
   const handleSelectPlan = async (planId: string) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setSelectedPlan(planId);
+    setSelectedPlanId(planId);
   };
 
   const handleClose = async () => {
@@ -98,13 +148,57 @@ export default function PaywallScreen() {
   };
 
   const handlePurchase = async () => {
+    const selectedPlan = plans.find((p) => p.id === selectedPlanId);
+    
+    if (!selectedPlan?.package) {
+      Alert.alert(
+        "Purchase Unavailable",
+        "In-app purchases are not available in this environment. Please test on a real device with Expo Go.",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+
+    setIsLoading(true);
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    navigation.replace("Success");
+
+    try {
+      const success = await purchase(selectedPlan.package);
+      if (success) {
+        trackEvent("Purchase Completed", { plan: selectedPlanId });
+        navigation.replace("Success", {});
+      }
+    } catch (error) {
+      Alert.alert("Purchase Failed", "Please try again later.", [{ text: "OK" }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleRestore = async () => {
+    setIsLoading(true);
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    try {
+      const success = await restore();
+      if (success) {
+        trackEvent("Purchases Restored");
+        Alert.alert("Restored", "Your purchases have been restored.", [
+          { text: "OK", onPress: () => navigation.goBack() },
+        ]);
+      } else {
+        Alert.alert("No Purchases Found", "No previous purchases were found to restore.", [
+          { text: "OK" },
+        ]);
+      }
+    } catch (error) {
+      Alert.alert("Restore Failed", "Please try again later.", [{ text: "OK" }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const selectedPlan = plans.find((p) => p.id === selectedPlanId);
 
   return (
     <View style={styles.container}>
@@ -152,7 +246,7 @@ export default function PaywallScreen() {
                 <GlassCard
                   style={[
                     styles.planCard,
-                    selectedPlan === plan.id && styles.selectedPlanCard,
+                    selectedPlanId === plan.id && styles.selectedPlanCard,
                   ]}
                 >
                   <View style={styles.planContent}>
@@ -160,10 +254,10 @@ export default function PaywallScreen() {
                       <View
                         style={[
                           styles.radioOuter,
-                          selectedPlan === plan.id && styles.radioOuterSelected,
+                          selectedPlanId === plan.id && styles.radioOuterSelected,
                         ]}
                       >
-                        {selectedPlan === plan.id && (
+                        {selectedPlanId === plan.id && (
                           <View style={styles.radioInner} />
                         )}
                       </View>
@@ -172,19 +266,19 @@ export default function PaywallScreen() {
                           <ThemedText style={styles.planName}>
                             {plan.name}
                           </ThemedText>
-                          {plan.badge && (
+                          {plan.badge ? (
                             <View style={styles.badge}>
                               <ThemedText style={styles.badgeText}>
                                 {plan.badge}
                               </ThemedText>
                             </View>
-                          )}
+                          ) : null}
                         </View>
-                        {plan.trial && (
+                        {plan.trial ? (
                           <ThemedText style={styles.trialText}>
                             {plan.trial}
                           </ThemedText>
-                        )}
+                        ) : null}
                       </View>
                     </View>
                     <View style={styles.priceContainer}>
@@ -200,19 +294,23 @@ export default function PaywallScreen() {
           <View style={styles.actionSection}>
             <PremiumButton
               title={
-                selectedPlan === "monthly"
+                isLoading
+                  ? "Processing..."
+                  : selectedPlan?.trial
                   ? "Start Free Trial"
                   : "Continue"
               }
               onPress={handlePurchase}
               variant="primary"
               style={styles.purchaseButton}
+              disabled={isLoading}
             />
 
             <PremiumButton
               title="Restore Purchases"
               onPress={handleRestore}
               variant="ghost"
+              disabled={isLoading}
             />
           </View>
 
@@ -221,6 +319,12 @@ export default function PaywallScreen() {
           </ThemedText>
         </View>
       </Animated.View>
+
+      {isLoading ? (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={Colors.accent} />
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -369,5 +473,11 @@ const styles = StyleSheet.create({
     ...Typography.caption,
     color: Colors.textTertiary,
     textAlign: "center",
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
