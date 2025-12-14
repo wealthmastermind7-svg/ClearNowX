@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderWidth: GlassEffects.borderWidth,
     borderColor: Colors.glassBorder,
+    backgroundColor: "rgba(30, 32, 36, 0.85)",
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
