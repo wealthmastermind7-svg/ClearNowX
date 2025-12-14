@@ -17,10 +17,10 @@ export const configurePurchases = async (): Promise<void> => {
   }
 
   try {
-    Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+    // Use INFO level for production, reduce verbosity
+    Purchases.setLogLevel(LOG_LEVEL.INFO);
     await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
     isConfigured = true;
-    console.log('RevenueCat configured successfully');
   } catch (error) {
     console.error('Failed to configure RevenueCat:', error);
   }
