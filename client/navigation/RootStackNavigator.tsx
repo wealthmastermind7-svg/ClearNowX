@@ -5,6 +5,7 @@ import ScanScreen from "@/screens/ScanScreen";
 import ResultsScreen from "@/screens/ResultsScreen";
 import SuccessScreen from "@/screens/SuccessScreen";
 import FilePreviewScreen from "@/screens/FilePreviewScreen";
+import PaywallScreen from "@/screens/PaywallScreen";
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -12,6 +13,7 @@ export type RootStackParamList = {
   Results: undefined;
   Success: { filesDeleted?: number; spaceFreed?: number } | undefined;
   FilePreview: { category: string };
+  Paywall: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -31,6 +33,14 @@ export default function RootStackNavigator() {
       <Stack.Screen name="Results" component={ResultsScreen} />
       <Stack.Screen name="Success" component={SuccessScreen} />
       <Stack.Screen name="FilePreview" component={FilePreviewScreen} />
+      <Stack.Screen 
+        name="Paywall" 
+        component={PaywallScreen}
+        options={{ 
+          presentation: "modal",
+          animation: "slide_from_bottom",
+        }}
+      />
     </Stack.Navigator>
   );
 }

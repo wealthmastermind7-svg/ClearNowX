@@ -193,11 +193,7 @@ export default function FilePreviewScreen() {
 
   const toggleAssetSelection = async (assetId: string) => {
     if (!isPremium) {
-      Alert.alert(
-        "Premium Required",
-        "Upgrade to premium to select and delete files.",
-        [{ text: "OK" }]
-      );
+      navigation.navigate("Paywall");
       return;
     }
 
@@ -219,11 +215,7 @@ export default function FilePreviewScreen() {
 
   const handleSelectAll = async () => {
     if (!isPremium) {
-      Alert.alert(
-        "Premium Required",
-        "Upgrade to premium to select files.",
-        [{ text: "OK" }]
-      );
+      navigation.navigate("Paywall");
       return;
     }
 
@@ -234,11 +226,7 @@ export default function FilePreviewScreen() {
 
   const handleDeleteSelected = async () => {
     if (!isPremium) {
-      Alert.alert(
-        "Premium Required",
-        "Upgrade to premium to delete files.",
-        [{ text: "OK" }]
-      );
+      navigation.navigate("Paywall");
       return;
     }
 

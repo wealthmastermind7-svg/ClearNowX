@@ -214,11 +214,7 @@ export default function ResultsScreen() {
     
     if (category.title === "Cache & Junk") {
       if (!isPremium) {
-        Alert.alert(
-          "Premium Required",
-          "Upgrade to premium to manage your files.",
-          [{ text: "OK" }]
-        );
+        navigation.navigate("Paywall");
       } else {
         Alert.alert(
           "Cache Cleanup",
@@ -230,11 +226,7 @@ export default function ResultsScreen() {
     }
 
     if (!isPremium) {
-      Alert.alert(
-        "Premium Required",
-        "Upgrade to premium to preview and delete files.",
-        [{ text: "OK" }]
-      );
+      navigation.navigate("Paywall");
       return;
     }
 
@@ -245,11 +237,7 @@ export default function ResultsScreen() {
 
   const handleUnlock = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    Alert.alert(
-      "Premium Required",
-      "Upgrade to premium to unlock full access.",
-      [{ text: "OK" }]
-    );
+    navigation.navigate("Paywall");
   };
 
   if (loading) {
