@@ -50,9 +50,17 @@ client/
     └── useScreenOptions.ts    # Navigation options hook
 ```
 
-## Monetization (Future RevenueCat Integration)
+## Monetization (RevenueCat Integration)
 - Single entitlement: `premium_access`
 - Products: clearnowx_monthly (7-day trial), clearnowx_annual, clearnowx_weekly
+- API Key: Set via `EXPO_PUBLIC_REVENUECAT_API_KEY` secret
+- PaywallScreen: Displays RevenueCat offerings dynamically using PACKAGE_TYPE enum
+- Default: Monthly plan preselected (with 7-day trial badge)
+
+### RevenueCat Files
+- `client/lib/revenuecat.ts` - SDK configuration and purchase functions
+- `client/context/PremiumContext.tsx` - usePremium() hook provider
+- `client/screens/PaywallScreen.tsx` - Custom paywall with glassmorphism UI
 
 ## Running the App
 - Development: `npm run all:dev`
@@ -63,4 +71,5 @@ client/
 - December 2024: Initial build with full glassmorphism UI
 - Created all 5 core screens with animations
 - Implemented haptic feedback system
-- Added premium paywall with subscription options
+- Added RevenueCat SDK integration with dynamic offerings
+- Created custom PaywallScreen with PACKAGE_TYPE enum for reliable plan detection
