@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClearNowX - Premium iPhone Storage Cleaner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0B0C0F 0%, #151618 100%);
+            color: #FFFFFF;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #7DF9FF;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(125, 249, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: #7DF9FF;
+        }
+
+        .card p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .card-link {
+            display: inline-block;
+            color: #7DF9FF;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 12px 24px;
+            border: 2px solid #7DF9FF;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .card-link:hover {
+            background: #7DF9FF;
+            color: #0B0C0F;
+        }
+
+        .contact-section {
+            background: rgba(125, 249, 255, 0.1);
+            border: 2px solid rgba(125, 249, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin: 60px 0;
+        }
+
+        .contact-section h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #7DF9FF;
+        }
+
+        .contact-section p {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .email-link {
+            display: inline-block;
+            color: #FFFFFF;
+            background: #7DF9FF;
+            text-decoration: none;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .email-link:hover {
+            background: #5DE8EE;
+            transform: scale(1.05);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .feature-item h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #7DF9FF;
+        }
+
+        .feature-item p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        footer {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+
+        .legal-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legal-links a {
+            color: #7DF9FF;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        .legal-links a:hover {
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .contact-section {
+                padding: 30px 20px;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">ClearNowX</div>
+            <h1>Instant Storage Cleanup</h1>
+            <p class="subtitle">Powered by Premium Intelligence</p>
+        </header>
+
+        <div class="features">
+            <div class="feature-item">
+                <div class="feature-icon">⚡</div>
+                <h3>Real-Time Analysis</h3>
+                <p>Fast storage scanning with instant insights</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🔒</div>
+                <h3>Privacy First</h3>
+                <p>All analysis happens on your device</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">✨</div>
+                <h3>Premium Design</h3>
+                <p>Beautiful glassmorphic interface</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">💾</div>
+                <h3>Smart Cleanup</h3>
+                <p>Reclaim gigabytes of storage</p>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="card">
+                <h2>Privacy Policy</h2>
+                <p>Understand how ClearNowX protects your data. Our privacy-first approach ensures all analysis happens locally on your device with no data collection.</p>
+                <a href="https://luxeweb.cerolauto.store/ClearNowX/privacy-policy" class="card-link">Read Privacy Policy →</a>
+            </div>
+
+            <div class="card">
+                <h2>Terms of Service</h2>
+                <p>Review our terms and conditions for using ClearNowX. Understand your rights and responsibilities when using our premium app.</p>
+                <a href="https://luxeweb.cerolauto.store/ClearNowX/terms" class="card-link">Read Terms of Service →</a>
+            </div>
+
+            <div class="card">
+                <h2>Subscription Terms</h2>
+                <p>Learn about ClearNowX Premium subscriptions, pricing, auto-renewal, and how to manage your subscription in App Store settings.</p>
+                <a href="https://luxeweb.cerolauto.store/ClearNowX/subscription-terms" class="card-link">Read Subscription Terms →</a>
+            </div>
+        </div>
+
+        <div class="contact-section">
+            <h2>Get Support</h2>
+            <p>Have questions or need help? We're here to assist you.</p>
+            <a href="mailto:admin@cerolauto.com" class="email-link">📧 Contact Support</a>
+            <p style="margin-top: 20px; font-size: 14px; color: rgba(255, 255, 255, 0.7);">admin@cerolauto.com</p>
+        </div>
+
+        <footer>
+            <div class="legal-links">
+                <a href="https://luxeweb.cerolauto.store/ClearNowX/privacy-policy">Privacy Policy</a>
+                <a href="https://luxeweb.cerolauto.store/ClearNowX/terms">Terms of Service</a>
+                <a href="https://luxeweb.cerolauto.store/ClearNowX/subscription-terms">Subscription Terms</a>
+                <a href="mailto:admin@cerolauto.com">Support</a>
+            </div>
+            <p>&copy; 2024 ClearNowX. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

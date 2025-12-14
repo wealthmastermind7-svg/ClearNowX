@@ -55,10 +55,13 @@ storage cleaner, iphone cleanup, cache cleaner, disk cleanup, storage analyzer, 
 admin@cerolauto.com
 
 ## Privacy Policy URL
-https://clearnowx.app/privacy-policy
+https://luxeweb.cerolauto.store/ClearNowX/privacy-policy
+
+## Legal Landing Page
+https://luxeweb.cerolauto.store/ClearNowX
 
 ## Marketing Website URL
-https://clearnowx.app
+https://luxeweb.cerolauto.store/ClearNowX
 
 ---
 
