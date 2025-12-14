@@ -332,7 +332,8 @@ function PlanCard({ plan, isSelected, onSelect }: PlanCardProps) {
         onPressOut={handlePressOut}
       >
         <GlassCard
-          style={[styles.planCard, isSelected && styles.planCardSelected]}
+          style={styles.planCard}
+          highlighted={isSelected}
         >
           {plan.isBestValue ? (
             <View style={styles.bestValueBadge}>
@@ -444,10 +445,6 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     position: "relative",
     overflow: "visible",
-  },
-  planCardSelected: {
-    borderColor: Colors.accent,
-    borderWidth: 2,
   },
   bestValueBadge: {
     position: "absolute",
