@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, View, ScrollView, Pressable, Platform, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
 import * as MediaLibrary from "expo-media-library";
 import Animated, {
   useSharedValue,
@@ -91,7 +92,6 @@ export default function ResultsScreen() {
                 text: "Open Settings", 
                 onPress: async () => {
                   try {
-                    const { Linking } = await import("expo-linking");
                     await Linking.openSettings();
                   } catch (e) {
                     // Settings not supported
@@ -214,7 +214,11 @@ export default function ResultsScreen() {
     
     if (category.title === "Cache & Junk") {
       if (!isPremium) {
-        navigation.navigate("Paywall");
+        Alert.alert(
+          "Premium Required",
+          "Upgrade to premium to manage your files.",
+          [{ text: "OK" }]
+        );
       } else {
         Alert.alert(
           "Cache Cleanup",
@@ -225,6 +229,15 @@ export default function ResultsScreen() {
       return;
     }
 
+    if (!isPremium) {
+      Alert.alert(
+        "Premium Required",
+        "Upgrade to premium to preview and delete files.",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+
     navigation.navigate("FilePreview", {
       category: category.title,
     });
@@ -232,7 +245,11 @@ export default function ResultsScreen() {
 
   const handleUnlock = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("Paywall");
+    Alert.alert(
+      "Premium Required",
+      "Upgrade to premium to unlock full access.",
+      [{ text: "OK" }]
+    );
   };
 
   if (loading) {

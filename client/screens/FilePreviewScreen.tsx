@@ -10,6 +10,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import * as Linking from "expo-linking";
 import * as MediaLibrary from "expo-media-library";
 import * as Haptics from "expo-haptics";
 import Animated, {
@@ -98,7 +99,6 @@ export default function FilePreviewScreen() {
                 onPress: async () => {
                   if (Platform.OS !== "web") {
                     try {
-                      const { Linking } = await import("expo-linking");
                       await Linking.openSettings();
                     } catch (e) {
                       navigation.goBack();
@@ -193,7 +193,11 @@ export default function FilePreviewScreen() {
 
   const toggleAssetSelection = async (assetId: string) => {
     if (!isPremium) {
-      navigation.navigate("Paywall");
+      Alert.alert(
+        "Premium Required",
+        "Upgrade to premium to select and delete files.",
+        [{ text: "OK" }]
+      );
       return;
     }
 
@@ -215,7 +219,11 @@ export default function FilePreviewScreen() {
 
   const handleSelectAll = async () => {
     if (!isPremium) {
-      navigation.navigate("Paywall");
+      Alert.alert(
+        "Premium Required",
+        "Upgrade to premium to select files.",
+        [{ text: "OK" }]
+      );
       return;
     }
 
@@ -226,7 +234,11 @@ export default function FilePreviewScreen() {
 
   const handleDeleteSelected = async () => {
     if (!isPremium) {
-      navigation.navigate("Paywall");
+      Alert.alert(
+        "Premium Required",
+        "Upgrade to premium to delete files.",
+        [{ text: "OK" }]
+      );
       return;
     }
 
