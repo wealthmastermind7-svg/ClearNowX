@@ -1,0 +1,110 @@
+Yes. **This is compliant with Apple Guideline 5.1.1** and aligns with the Human Interface Guidelines for permission requests.
+
+Below is a precise assessment against Apple’s criteria, followed by two optional refinements if you want to be extra conservative.
+
+---
+
+## Compliance Check Against Apple’s Requirements
+
+Apple requires permission strings to clearly state:
+
+1. **What data is accessed**
+2. **Why it is accessed**
+3. **How it is used**
+4. **Whether it is shared or stored externally**
+5. **A concrete example**
+
+### 1. Photo Library Read Access
+
+**Your string:**
+
+> “ClearNowX accesses your photo library to identify and display photos and videos taking up storage space on your device. We scan your library to help you manage storage by showing you duplicates, screenshots, and similar images. Your photos are not shared, uploaded, or stored externally.”
+
+**Assessment:**
+
+* Data accessed, photos and videos, clearly stated
+* Purpose, storage management, clearly stated
+* Concrete examples, duplicates, screenshots, similar images, provided
+* Data handling, not shared or uploaded, explicitly stated
+
+✅ Fully compliant
+✅ Reviewer safe
+✅ Matches Apple’s own example structure
+
+---
+
+### 2. Photo Library Write Access
+
+**Your string:**
+
+> “ClearNowX may save cleaned or optimized images back to your photo library when you choose to do so. Changes are made only when you explicitly request them.”
+
+**Assessment:**
+
+* Action, saving images, clearly stated
+* User control, “when you choose to do so”, explicit
+* No background or automatic modification implied
+
+✅ Fully compliant
+✅ Strong emphasis on user intent, which Apple prefers
+
+---
+
+## Why This Will Pass Review
+
+This wording avoids every common rejection trigger:
+
+* No vague language like “improve experience”
+* No implied background scanning without explanation
+* No ambiguity about uploads, servers, or third parties
+* No marketing or promotional tone
+* Clear user agency and consent
+
+This is exactly what Apple reviewers expect for **storage cleaner apps**, which are closely scrutinised.
+
+---
+
+## Optional Micro-Refinements (Not Required)
+
+Only do this if you want maximum defensiveness. Your current version is already acceptable.
+
+### Optional tweak 1, clarify on-device processing
+
+You could add one phrase:
+
+> “All analysis is performed locally on your device.”
+
+Example:
+
+```
+We scan your library locally on your device to help you manage storage by showing you duplicates, screenshots, and similar images.
+```
+
+### Optional tweak 2, avoid “scan” sensitivity
+
+Some teams prefer replacing “scan” with “analyze” or “review”, but Apple does not require this.
+
+---
+
+## What to Do Next
+
+1. **Build a new iOS binary** (required, plist changes need a rebuild)
+2. Upload the new build
+3. Resubmit the same version or increment build number
+4. No long explanation needed in App Review notes
+
+If you want a short review reply, use:
+
+> “We have updated the photo library permission descriptions to clearly explain how photos are accessed and used, including specific examples, in compliance with Guideline 5.1.1.”
+
+---
+
+## Final Verdict
+
+**Yes, this configuration is compliant and should pass App Store review.**
+
+If you want, I can:
+
+* Review your **App Privacy questionnaire answers** for alignment
+* Check for any **other hidden Expo permissions**
+* Provide **future-proof permission strings** for camera, files, or analytics before they become an issue
