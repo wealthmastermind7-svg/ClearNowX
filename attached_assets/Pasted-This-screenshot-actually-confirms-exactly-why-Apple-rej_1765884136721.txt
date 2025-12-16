@@ -1,0 +1,137 @@
+This screenshot actually **confirms exactly why Apple rejected the build** and it also confirms that **your fixes are correct**.
+
+I will explain this very clearly, because this is an important nuance many developers miss.
+
+---
+
+## What Apple Saw in This Screenshot
+
+The system dialog says:
+
+> **“ClearNowX would like full access to your Photo Library.”**
+
+Underneath:
+
+> “Allow ClearNowX to access your photos”
+
+Buttons:
+
+* Limit Access
+* Allow Full Access
+* Don’t Allow
+
+### Why This Triggered the Rejection
+
+On iOS 14+, **“Full Access”** is considered a **high-sensitivity permission**.
+
+When Apple sees:
+
+* A request for **full photo library access**
+* Combined with **generic or incomplete purpose strings**
+
+They *automatically* cross-check:
+
+* Your `NSPhotoLibraryUsageDescription`
+* Your App Privacy answers
+* Your marketing claims
+
+Your **old** purpose string did not clearly explain:
+
+* Why full access was needed
+* What exactly would be done with all photos
+* Whether analysis was local
+* Concrete examples of use
+
+Hence the **5.1.1 rejection**.
+
+---
+
+## Why Your Current Setup FIXES This
+
+Your **updated purpose strings** now explicitly justify **full access**:
+
+You explain:
+
+* You analyze the entire library
+* You identify duplicates, screenshots, similar images
+* Analysis is local
+* Nothing is uploaded or shared
+
+That is **exactly** what Apple requires **when requesting full access**.
+
+So yes, **full access is acceptable** for ClearNowX. The problem was never the permission itself, only the wording.
+
+---
+
+## Important: Do NOT Try to Avoid “Full Access”
+
+Some developers try to downgrade to limited access to avoid scrutiny.
+For a storage analysis app, that actually creates **new problems**:
+
+* Limited access breaks duplicate detection
+* Apple reviewers will test functionality
+* Inconsistent behavior can cause a new rejection
+
+You are doing the **right thing** by requesting full access and justifying it properly.
+
+---
+
+## One Final Improvement (Strongly Recommended)
+
+### Add a Pre-Permission Screen in the App
+
+Apple loves this, especially for photo access.
+
+Before the system dialog appears, show a simple screen explaining **why full access is needed**.
+
+### Example In-App Text (Safe)
+
+**Title:**
+Why Photo Access Is Needed
+
+**Body:**
+ClearNowX analyzes your photo library to identify duplicates, large videos, and storage-heavy images so you can free up space.
+All analysis happens locally on your device. Photos are never uploaded or shared.
+
+**Button:**
+Continue
+
+Then trigger the system permission prompt.
+
+This dramatically reduces:
+
+* Reviewer confusion
+* User denial rates
+* Follow-up privacy questions
+
+---
+
+## Does This Screenshot Require Marketing or Privacy Changes?
+
+No **additional** changes beyond what we already discussed.
+
+However, it reinforces that:
+
+* Your marketing page must not claim system-level cleanup
+* Your privacy policy must clearly state local-only analysis
+* Your permission strings must stay as they are now
+
+You have already aligned all three.
+
+---
+
+## Final Verdict (With This Screenshot Included)
+
+* ✅ Rejection cause is fully understood
+* ✅ Your updated permission strings directly address it
+* ✅ Full Photo Library access is justified for your app
+* ✅ No further permission changes required
+* ✅ Only a new build + resubmission needed
+
+If you want, next I can:
+
+* Write the **exact pre-permission screen copy**
+* Review your **permission trigger timing** in code
+* Do a **final reviewer simulation** now that we’ve seen the screenshot
+
+You are in a good position. This was a clean, fixable rejection.
