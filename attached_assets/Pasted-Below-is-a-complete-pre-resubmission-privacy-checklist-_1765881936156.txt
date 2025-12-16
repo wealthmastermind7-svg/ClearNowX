@@ -1,0 +1,156 @@
+Below is a **complete pre-resubmission privacy checklist** tailored specifically for **ClearNowX** and **Expo-managed iOS apps**. If you follow this line by line, you minimise the risk of a second rejection.
+
+---
+
+## 1. App Store Connect – App Privacy (Critical)
+
+Go to **App Store Connect → App Privacy** and ensure the following selections are consistent with your actual behaviour.
+
+### Data Collection
+
+For a local, on-device cleaner app like ClearNowX, you should select:
+
+**Data Collected:**
+➡️ **No, we do not collect data from this app**
+
+This is valid **only if**:
+
+* Photos are processed locally
+* Nothing is uploaded to servers
+* No analytics SDK that tracks users is enabled
+
+If this is true, this is the cleanest and safest option.
+
+---
+
+### Data Used to Track You
+
+Select:
+➡️ **No, we do not track users**
+
+This means:
+
+* No cross-app tracking
+* No advertising identifiers
+* No fingerprinting
+
+---
+
+### Data Linked to the User
+
+Select:
+➡️ **No data is linked to the user**
+
+---
+
+### Data Not Linked to the User
+
+Select:
+➡️ **No data is collected**
+
+---
+
+## 2. Verify Expo Plugins Are Not Adding Hidden Permissions
+
+From your config:
+
+### Installed plugins
+
+* `expo-splash-screen` ✅ safe
+* `expo-web-browser` ✅ safe
+
+Neither adds:
+
+* Tracking
+* Analytics
+* Privacy-sensitive permissions
+
+✅ No issues here
+
+---
+
+## 3. iOS Permission Keys Checklist
+
+You currently have:
+
+* `NSPhotoLibraryUsageDescription` ✅
+* `NSPhotoLibraryAddUsageDescription` ✅
+
+Make sure you **do NOT** accidentally include any of the following unless used:
+
+* `NSCameraUsageDescription`
+* `NSMicrophoneUsageDescription`
+* `NSLocationWhenInUseUsageDescription`
+* `NSContactsUsageDescription`
+
+If they exist in `infoPlist` but are unused, **remove them**. Apple rejects unused permissions.
+
+---
+
+## 4. In-App Behaviour Must Match the Strings
+
+Apple reviewers actively test this.
+
+Make sure:
+
+* The photo permission prompt appears **only when the user initiates a scan**
+* No photo access happens silently on app launch
+* Saving back to the library only happens after a clear user action
+
+If your app auto-starts analysis on first launch, add a **pre-permission screen** explaining why.
+
+---
+
+## 5. Review Notes (Optional but Recommended)
+
+In **App Review Information → Notes**, add this short clarification:
+
+```
+ClearNowX analyses photos and videos locally on the device to identify duplicates and storage-heavy items. No photos or user data are uploaded, shared, or stored externally.
+```
+
+This often prevents follow-up questions.
+
+---
+
+## 6. Versioning and Resubmission Rules
+
+Because you changed `infoPlist`:
+
+* You **must upload a new build**
+* You may keep version `1.0.0`
+* Increment **build number only** (for example, 1.0.0 (5))
+
+Do **not** reuse the rejected build.
+
+---
+
+## 7. Final Pre-Submit Sanity Check
+
+Before clicking Submit:
+
+* App launches without requesting permissions immediately
+* Permission text matches what the app actually does
+* App Privacy answers are truthful and minimal
+* No unused permissions exist
+* Screenshots do not imply cloud uploads or syncing
+
+---
+
+## Final Verdict
+
+If you:
+
+* Use the updated permission strings you shared
+* Declare **No Data Collected**
+* Upload a fresh build
+
+👉 **This submission should pass review without further questions.**
+
+If you want, next I can:
+
+* Review your **App Privacy answers text-by-text**
+* Help you write a **perfect pre-permission screen**
+* Double-check for **Expo default entitlements that sometimes trip reviews**
+
+Tell me which one you want next.
