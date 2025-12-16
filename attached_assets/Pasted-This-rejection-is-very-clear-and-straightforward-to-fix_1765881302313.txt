@@ -1,0 +1,166 @@
+This rejection is very clear and straightforward to fix. Apple is not rejecting your app’s functionality. They are rejecting the **permission wording**.
+
+---
+
+## What Apple Rejected (Plain English)
+
+**Guideline 5.1.1 – Privacy – Data Collection and Storage**
+
+Apple is saying that one or more **purpose strings** in your app are too vague.
+
+Specifically mentioned:
+
+* **Photo Library permission** (very likely `NSPhotoLibraryUsageDescription` or `NSPhotoLibraryAddUsageDescription`)
+
+Apple requires that **every permission request must explicitly explain**:
+
+1. **What data is accessed**
+2. **Why it is accessed**
+3. **How it is used**
+4. **A concrete example**
+
+Generic text like:
+
+> “This app needs access to your photos”
+
+❌ will always be rejected.
+
+---
+
+## Why This Happened
+
+Expo and many templates ship with **generic permission strings**, for example:
+
+* “Allow access to photos”
+* “Used to upload images”
+
+Apple reviewers now actively check these against the **Human Interface Guidelines** you linked.
+
+---
+
+## Exactly What You Need to Do
+
+### Step 1: Identify Which Permission Is Flagged
+
+From Apple’s message:
+
+> “Update the photo library purpose string…”
+
+So the issue is **Photo Library access**.
+
+This means one or more of these keys exist in your app:
+
+* `NSPhotoLibraryUsageDescription`
+* `NSPhotoLibraryAddUsageDescription`
+
+---
+
+### Step 2: Replace With an Apple-Compliant Purpose String
+
+Below are **review-safe, Apple-approved examples** you can copy verbatim and adapt.
+
+#### If users SELECT images from their library
+
+```
+This app allows you to select photos from your photo library to attach to your records and keep your information organised. Selected photos are used only within the app and are not shared or stored externally.
+```
+
+#### If users SAVE images to their library
+
+```
+This app allows you to save generated images to your photo library so you can keep copies for personal reference and future use. Photos are saved only when you explicitly choose to do so.
+```
+
+#### If your app BOTH reads and saves photos
+
+```
+This app allows you to select photos from your photo library and save images back to your device so you can manage and store your content. Photos are accessed only when you take action and are not shared with third parties.
+```
+
+Use **plain language**. Avoid marketing. Avoid buzzwords.
+
+---
+
+### Step 3: Where to Set This (Expo / iOS)
+
+#### If you are using **Expo**
+
+In `app.json` or `app.config.js`:
+
+```json
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app allows you to select photos from your photo library to attach to your records and keep your information organised. Selected photos are used only within the app and are not shared.",
+        "NSPhotoLibraryAddUsageDescription": "This app allows you to save images to your photo library for personal reference. Images are saved only when you choose to do so."
+      }
+    }
+  }
+}
+```
+
+Then:
+
+* Rebuild the iOS binary
+* Upload a **new build**
+* Resubmit the same version or increment version if needed
+
+---
+
+### Step 4: Double-Check All Permissions
+
+Even if Apple only flagged photos, reviewers often check **all permissions**.
+
+Make sure these are also explicit if present:
+
+* Camera
+* Microphone
+* Location
+* Contacts
+* Files
+
+Example for Camera:
+
+```
+This app uses the camera so you can capture photos to include in your records. Photos are used only within the app and are not shared.
+```
+
+---
+
+## Important: App Privacy Section (Do Not Skip)
+
+Although not the direct cause here, ensure:
+
+* **App Privacy** in App Store Connect matches reality
+* If you say “Data Not Collected”, your permission text must reflect that
+* No contradiction between purpose strings and privacy answers
+
+---
+
+## After You Fix It
+
+When you resubmit:
+
+* You do **not** need to reply defensively
+* Just resubmit with updated strings
+
+If you want to reply, keep it short:
+
+> “We have updated the photo library purpose string to clearly explain how user data is used, including specific examples, in compliance with Guideline 5.1.1.”
+
+---
+
+## Summary
+
+* ❌ Not a serious rejection
+* ❌ Not a code issue
+* ✅ Just unclear permission text
+* ✅ Fix once, never see this again
+
+If you want, tell me:
+
+* What **exactly** your app does with photos, and
+* Whether you are using **Expo managed or bare**
+
+I will tailor the **exact final strings** for zero-risk approval.

@@ -10,7 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.clearnowx.app"
+      "bundleIdentifier": "com.clearnowx.app",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "ClearNowX accesses your photo library to identify and display photos and videos taking up storage space on your device. We scan your library to help you manage storage by showing you duplicates, screenshots, and similar images. Your photos are not shared, uploaded, or stored externally.",
+        "NSPhotoLibraryAddUsageDescription": "ClearNowX may save cleaned or optimized images back to your photo library when you choose to do so. Changes are made only when you explicitly request them."
+      }
     },
     "android": {
       "adaptiveIcon": {
