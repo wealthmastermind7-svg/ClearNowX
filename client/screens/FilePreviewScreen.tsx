@@ -6,6 +6,7 @@ import {
   Pressable,
   Platform,
   Alert,
+  Modal,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -74,15 +75,34 @@ export default function FilePreviewScreen() {
   const [loading, setLoading] = useState(true);
   const [selectedCount, setSelectedCount] = useState(0);
   const [totalSelectedSize, setTotalSelectedSize] = useState(0);
+  const [showPermissionExplanation, setShowPermissionExplanation] = useState(false);
 
   const headerOpacity = useSharedValue(0);
 
   useEffect(() => {
     trackPageView("FilePreview");
     trackEvent("File Preview Opened", { category });
-    loadAssets();
+    checkPermissionAndLoadAssets();
     headerOpacity.value = withTiming(1, { duration: 400 });
   }, []);
+
+  const checkPermissionAndLoadAssets = async () => {
+    try {
+      const permission = await MediaLibrary.getPermissionsAsync();
+      if (!permission.granted) {
+        setShowPermissionExplanation(true);
+        return;
+      }
+      await loadAssets();
+    } catch (error) {
+      console.error("Error checking permissions:", error);
+    }
+  };
+
+  const handleContinuePermission = async () => {
+    setShowPermissionExplanation(false);
+    await loadAssets();
+  };
 
   const loadAssets = async () => {
     try {
@@ -319,6 +339,48 @@ export default function FilePreviewScreen() {
 
   return (
     <View style={styles.container}>
+      <Modal
+        visible={showPermissionExplanation}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          setShowPermissionExplanation(false);
+          navigation.goBack();
+        }}
+      >
+        <View style={styles.modalOverlay}>
+          <GlassCard style={styles.permissionModal}>
+            <Feather name="info" size={40} color={Colors.accent} />
+            <ThemedText style={styles.permissionTitle}>
+              Why Photo Access Is Needed
+            </ThemedText>
+            <ThemedText style={styles.permissionDescription}>
+              ClearNowX analyzes your photo library to identify duplicates, large videos, and storage-heavy images so you can free up space.
+            </ThemedText>
+            <ThemedText style={styles.permissionDescription}>
+              All analysis happens locally on your device. Photos are never uploaded or shared.
+            </ThemedText>
+            <View style={styles.permissionButtons}>
+              <Pressable
+                onPress={() => {
+                  setShowPermissionExplanation(false);
+                  navigation.goBack();
+                }}
+                style={styles.declineButton}
+              >
+                <ThemedText style={styles.declineButtonText}>Not Now</ThemedText>
+              </Pressable>
+              <PremiumButton
+                title="Continue"
+                onPress={handleContinuePermission}
+                variant="primary"
+                style={styles.continueButton}
+              />
+            </View>
+          </GlassCard>
+        </View>
+      </Modal>
+
       <Animated.View
         style={[
           styles.header,
@@ -411,6 +473,56 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: Spacing.lg,
+  },
+  permissionModal: {
+    alignItems: "center",
+    padding: Spacing["2xl"],
+    maxWidth: 320,
+  },
+  permissionTitle: {
+    ...Typography.h3,
+    color: Colors.textPrimary,
+    marginTop: Spacing.xl,
+    marginBottom: Spacing.lg,
+    textAlign: "center",
+  },
+  permissionDescription: {
+    ...Typography.body,
+    color: Colors.textSecondary,
+    textAlign: "center",
+    marginBottom: Spacing.lg,
+    lineHeight: 22,
+  },
+  permissionButtons: {
+    flexDirection: "row",
+    gap: Spacing.lg,
+    width: "100%",
+    marginTop: Spacing.xl,
+  },
+  declineButton: {
+    flex: 1,
+    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.textTertiary,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  declineButtonText: {
+    ...Typography.body,
+    color: Colors.textSecondary,
+    fontWeight: "600",
+  },
+  continueButton: {
+    flex: 1,
   },
   header: {
     flexDirection: "row",
