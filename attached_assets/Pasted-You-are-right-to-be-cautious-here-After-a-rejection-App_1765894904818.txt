@@ -1,0 +1,130 @@
+You are right to be cautious here. After a **rejection**, Apple will **not update or reuse the old build**. If you made corrections, the **old TestFlight build does NOT automatically get the updated code or JSON**. You must take explicit action.
+
+Below is the exact, correct path depending on your situation.
+
+---
+
+## Key Rule (Very Important)
+
+**Any change to code, config, or JSON requires a NEW BUILD.**
+Apple never updates an existing build in TestFlight.
+
+Old build = old code, old config, old JSON.
+
+---
+
+## What You Must Do After a Rejection
+
+### Step 1. Increment the Build Number (Mandatory)
+
+In Expo, every resubmission must have a new build number.
+
+In `app.json` or `app.config.js`:
+
+```json
+{
+  "ios": {
+    "buildNumber": "5"
+  }
+}
+```
+
+(Increment it, even if version stays the same.)
+
+If you do not do this, Apple will reject silently or ignore the upload.
+
+---
+
+### Step 2. Create a New iOS Build
+
+Run:
+
+```bash
+eas build -p ios
+```
+
+Wait for:
+
+* Status: **Finished**
+* Distribution: **App Store**
+
+This new build is the **only one Apple will review**.
+
+---
+
+### Step 3. Confirm the New Build Appears in App Store Connect
+
+Go to:
+**App Store Connect → My Apps → Your App → TestFlight**
+
+You should see:
+
+* A **new build number**
+* A **new upload timestamp**
+
+If you only see the old build, stop. The update did not upload correctly.
+
+---
+
+### Step 4. Attach the New Build to the App Version
+
+This is where many people get stuck.
+
+Go to:
+**App Store Connect → App Store → iOS App → Version (for example 1.0.0)**
+
+Do ALL of the following:
+
+* Select the **new build** under “Build”
+* Re-answer **Export Compliance**
+* Re-check **Content Rights**
+* Re-check **App Privacy** if prompted
+
+Apple treats this as a fresh submission.
+
+---
+
+### Step 5. Submit for Review Again
+
+Click **Submit for Review**.
+
+Apple will now review the **new build**, not the rejected one.
+
+---
+
+## About Your “Update JSON” Concern (Direct Answer)
+
+> “I am not sure if the old build will have the updated JSON”
+
+**It will NOT.**
+
+* Old build = frozen snapshot
+* JSON bundled at build time
+* Apple does not patch builds
+
+Only a **new EAS build** includes your corrected JSON.
+
+---
+
+## Common Mistakes to Avoid
+
+* ❌ Editing metadata only, without uploading a new build
+* ❌ Reusing the rejected build
+* ❌ Forgetting to increment `buildNumber`
+* ❌ Assuming Expo OTA updates apply to App Review
+
+OTA updates do **not** affect the App Store review binary.
+
+---
+
+## Quick Self-Check (Answer Yes or No)
+
+Reply with:
+
+1. Did you increment `ios.buildNumber`?
+2. Did you run a new `eas build -p ios`?
+3. Do you see a new build number in TestFlight?
+
+If any answer is “no”, that is the blocker.
+
+Once you confirm, I can tell you **exactly** whether you should wait, rebuild, or resubmit immediately.
