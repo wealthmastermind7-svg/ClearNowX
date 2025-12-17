@@ -49,8 +49,8 @@ interface PlanOption {
 
 const FEATURES = [
   { icon: "trash-2" as const, text: "Delete duplicate photos" },
-  { icon: "video" as const, text: "Clean large videos" },
-  { icon: "hard-drive" as const, text: "Remove cache & junk" },
+  { icon: "video" as const, text: "Manage large videos" },
+  { icon: "hard-drive" as const, text: "Identify unnecessary files" },
   { icon: "refresh-cw" as const, text: "Unlimited scans" },
 ];
 

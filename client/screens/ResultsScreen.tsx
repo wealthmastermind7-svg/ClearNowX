@@ -71,7 +71,7 @@ export default function ResultsScreen() {
           { id: "1", icon: "image", title: "Duplicate Photos", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
           { id: "2", icon: "video", title: "Large Videos", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
           { id: "3", icon: "file", title: "Old Downloads", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
-          { id: "4", icon: "trash-2", title: "Cache & Junk", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
+          { id: "4", icon: "trash-2", title: "Unnecessary Files", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
         ]);
         setTotalReclaimable("Use Expo Go");
         setLoading(false);
@@ -158,9 +158,9 @@ export default function ResultsScreen() {
         {
           id: "4",
           icon: "trash-2",
-          title: "Cache & Junk",
+          title: "Unnecessary Files",
           size: formatBytes(estimatedCacheSize),
-          count: "App caches & temp files",
+          count: "Large items & duplicates",
           fileCount: 0,
         },
       ];
@@ -212,13 +212,13 @@ export default function ResultsScreen() {
   const handleCategoryPress = async (category: StorageCategory) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     
-    if (category.title === "Cache & Junk") {
+    if (category.title === "Unnecessary Files") {
       if (!isPremium) {
         navigation.navigate("Paywall");
       } else {
         Alert.alert(
-          "Cache Cleanup",
-          "Cache files are managed by individual apps. Go to Settings > General > iPhone Storage to manage app caches.",
+          "Manage Storage",
+          "Review and manage unnecessary files. Large items and duplicates can take up significant storage space.",
           [{ text: "OK" }]
         );
       }
