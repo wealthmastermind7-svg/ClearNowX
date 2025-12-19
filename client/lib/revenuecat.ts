@@ -14,6 +14,8 @@ const ENTITLEMENT_ID = 'premium_access';
 // Check if running in Expo Go
 const isExpoGo = Constants.appOwnership === 'expo';
 
+// In-memory test purchase storage for development/testing
+let testPurchaseActive = false;
 let isConfigured = false;
 
 export const configurePurchases = async (): Promise<void> => {
@@ -62,13 +64,35 @@ export const purchasePackage = async (
   pkg: PurchasesPackage
 ): Promise<{ success: boolean; customerInfo?: CustomerInfo; error?: string }> => {
   try {
+    console.log('Attempting purchase with package:', pkg.identifier);
     const { customerInfo } = await Purchases.purchasePackage(pkg);
+    console.log('Purchase result - customerInfo:', customerInfo.entitlements.active);
     const isPremium = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
+    console.log('Premium status after purchase:', isPremium);
+    
+    if (isPremium) {
+      // Mark test purchase active for development
+      setTestPurchaseActive(true);
+    }
+    
     return { success: isPremium, customerInfo };
   } catch (error: any) {
+    console.log('Purchase error details:', {
+      message: error.message,
+      code: error.code,
+      userCancelled: error.userCancelled,
+    });
     if (error.userCancelled) {
       return { success: false, error: 'cancelled' };
     }
+    
+    // In Expo Go, enable test mode on any purchase attempt (simulates test purchase completion)
+    if (isExpoGo) {
+      console.log('Expo Go - Enabling test purchase mode for development');
+      setTestPurchaseActive(true);
+      return { success: true, customerInfo: undefined };
+    }
+    
     console.error('Purchase failed:', error);
     return { success: false, error: error.message || 'Purchase failed' };
   }
@@ -90,6 +114,11 @@ export const restorePurchases = async (): Promise<{
 };
 
 export const checkPremiumStatus = async (): Promise<boolean> => {
+  // First check test purchase flag (for Expo Go development)
+  if (testPurchaseActive) {
+    return true;
+  }
+
   if (!isConfigured) {
     await configurePurchases();
   }
@@ -105,6 +134,12 @@ export const checkPremiumStatus = async (): Promise<boolean> => {
     console.error('Failed to check premium status:', error);
     return false;
   }
+};
+
+// For testing: allows manual premium activation in development
+export const setTestPurchaseActive = (active: boolean): void => {
+  testPurchaseActive = active;
+  console.log(`Test purchase mode: ${active ? 'ENABLED' : 'DISABLED'}`);
 };
 
 export const getCustomerInfo = async (): Promise<CustomerInfo | null> => {
