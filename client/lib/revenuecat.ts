@@ -71,16 +71,13 @@ export const purchasePackage = async (
 ): Promise<{ success: boolean; customerInfo?: CustomerInfo; error?: string }> => {
   try {
     console.log('Attempting purchase with package:', pkg.identifier);
-    
-    // Use Promise race to timeout RevenueCat call if it hangs
-    const purchasePromise = Purchases.purchasePackage(pkg);
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Purchase timeout')), 5000)
-    );
-    
-    const { customerInfo } = await Promise.race([purchasePromise, timeoutPromise]) as any;
+    const { customerInfo } = await Purchases.purchasePackage(pkg);
     console.log('Purchase result - customerInfo:', customerInfo.entitlements.active);
-    const isPremium = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
+    
+    // Check if ANY entitlement is active (not just premium_access)
+    const activeEntitlements = Object.keys(customerInfo.entitlements.active);
+    const isPremium = activeEntitlements.length > 0;
+    console.log('Active entitlements:', activeEntitlements, 'isPremium:', isPremium);
     
     if (isPremium) {
       await setTestPurchaseActive(true);
@@ -93,7 +90,7 @@ export const purchasePackage = async (
       return { success: false, error: 'cancelled' };
     }
     
-    // In Expo Go, enable test mode on any purchase attempt or timeout
+    // In Expo Go, enable test mode on any purchase attempt or error
     if (isExpoGo) {
       console.log('Expo Go - Enabling test purchase mode');
       await setTestPurchaseActive(true);
