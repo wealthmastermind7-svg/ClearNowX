@@ -7,6 +7,7 @@ import {
   Platform,
   Alert,
   Modal,
+  Dimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -62,6 +63,11 @@ function formatDuration(seconds: number): string {
   const secs = Math.floor(seconds % 60);
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
+
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const NUM_COLUMNS = 3;
+const ITEM_MARGIN = 4;
+const ITEM_SIZE = (SCREEN_WIDTH - (Spacing.md * 2) - (ITEM_MARGIN * (NUM_COLUMNS - 1))) / NUM_COLUMNS;
 
 export default function FilePreviewScreen() {
   const navigation = useNavigation<FilePreviewScreenNavigationProp>();
@@ -591,11 +597,12 @@ const styles = StyleSheet.create({
   },
   gridContainer: {
     padding: Spacing.md,
-    gap: Spacing.sm,
   },
   assetItem: {
-    flex: 1 / 3,
-    aspectRatio: 1,
+    width: ITEM_SIZE,
+    height: ITEM_SIZE,
+    marginRight: ITEM_MARGIN,
+    marginBottom: ITEM_MARGIN,
     borderRadius: BorderRadius.md,
     overflow: "hidden",
     backgroundColor: "rgba(30, 32, 36, 0.6)",
