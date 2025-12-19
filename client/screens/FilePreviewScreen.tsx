@@ -309,6 +309,8 @@ export default function FilePreviewScreen() {
           source={{ uri: item.uri }}
           style={styles.assetThumbnail}
           contentFit="cover"
+          placeholder={{ backgroundColor: "rgba(30, 32, 36, 0.8)" }}
+          cachePolicy="memory-disk"
         />
 
         {item.mediaType === "video" && (
