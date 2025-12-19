@@ -51,11 +51,19 @@ client/
 ```
 
 ## Monetization (RevenueCat Integration)
-- Single entitlement: `premium_access`
+- Entitlement detection: Checks for ANY active entitlement (not hardcoded ID)
 - Products: clearnowx_monthly (7-day trial), clearnowx_annual, clearnowx_weekly
-- API Key: Set via `EXPO_PUBLIC_REVENUECAT_API_KEY` secret
 - PaywallScreen: Displays RevenueCat offerings dynamically using PACKAGE_TYPE enum
 - Default: Monthly plan preselected (with 7-day trial badge)
+
+### API Keys
+- `EXPO_PUBLIC_REVENUECAT_API_KEY` - Production App Store key (used in production builds)
+- `EXPO_PUBLIC_REVENUECAT_TEST_API_KEY` - Test Store key (used in Expo Go only)
+
+### Environment Detection
+- **Expo Go**: Uses Test Store API key, enables test mode for development
+- **Production Build**: Uses Production API key, queries RevenueCat for real entitlements
+- Apple Sandbox testing works automatically with production key
 
 ### RevenueCat Files
 - `client/lib/revenuecat.ts` - SDK configuration and purchase functions

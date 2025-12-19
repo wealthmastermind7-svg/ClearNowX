@@ -9,7 +9,6 @@ import Purchases, {
 
 const REVENUECAT_API_KEY = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY || '';
 const REVENUECAT_TEST_API_KEY = process.env.EXPO_PUBLIC_REVENUECAT_TEST_API_KEY || '';
-const ENTITLEMENT_ID = 'premium_access';
 
 // Check if running in Expo Go
 const isExpoGo = Constants.appOwnership === 'expo';
@@ -79,7 +78,8 @@ export const purchasePackage = async (
     const isPremium = activeEntitlements.length > 0;
     console.log('Active entitlements:', activeEntitlements, 'isPremium:', isPremium);
     
-    if (isPremium) {
+    // Only enable test mode in Expo Go for development
+    if (isPremium && isExpoGo) {
       await setTestPurchaseActive(true);
     }
     
@@ -109,7 +109,16 @@ export const restorePurchases = async (): Promise<{
 }> => {
   try {
     const customerInfo = await Purchases.restorePurchases();
-    const isPremium = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
+    // Check for ANY active entitlement (works with any entitlement name)
+    const activeEntitlements = Object.keys(customerInfo.entitlements.active);
+    const isPremium = activeEntitlements.length > 0;
+    console.log('Restore - Active entitlements:', activeEntitlements);
+    
+    // Only enable test mode in Expo Go for development
+    if (isPremium && isExpoGo) {
+      await setTestPurchaseActive(true);
+    }
+    
     return { success: isPremium, customerInfo };
   } catch (error: any) {
     console.error('Restore failed:', error);
@@ -118,8 +127,8 @@ export const restorePurchases = async (): Promise<{
 };
 
 export const checkPremiumStatus = async (): Promise<boolean> => {
-  // First check test purchase flag (for Expo Go development)
-  if (testPurchaseActive) {
+  // First check test purchase flag (only for Expo Go development)
+  if (isExpoGo && testPurchaseActive) {
     return true;
   }
 
@@ -133,7 +142,11 @@ export const checkPremiumStatus = async (): Promise<boolean> => {
 
   try {
     const customerInfo = await Purchases.getCustomerInfo();
-    return customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
+    // Check for ANY active entitlement (works with any entitlement name)
+    const activeEntitlements = Object.keys(customerInfo.entitlements.active);
+    const isPremium = activeEntitlements.length > 0;
+    console.log('Check status - Active entitlements:', activeEntitlements);
+    return isPremium;
   } catch (error) {
     console.error('Failed to check premium status:', error);
     return false;
