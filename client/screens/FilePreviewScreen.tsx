@@ -205,6 +205,10 @@ export default function FilePreviewScreen() {
           .slice(0, 50);
       } else if (category === "Old Downloads") {
         filteredAssets = validAssets.slice(0, 50);
+      } else if (category === "Unnecessary Files") {
+        filteredAssets = validAssets
+          .sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0))
+          .slice(0, 50);
       }
 
       console.log(`Showing ${filteredAssets.length} filtered assets`);

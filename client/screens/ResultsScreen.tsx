@@ -211,19 +211,6 @@ export default function ResultsScreen() {
 
   const handleCategoryPress = async (category: StorageCategory) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
-    if (category.title === "Unnecessary Files") {
-      if (!isPremium) {
-        navigation.navigate("Paywall");
-      } else {
-        Alert.alert(
-          "Manage Storage",
-          "Review and manage unnecessary files. Large items and duplicates can take up significant storage space.",
-          [{ text: "OK" }]
-        );
-      }
-      return;
-    }
 
     if (!isPremium) {
       navigation.navigate("Paywall");
