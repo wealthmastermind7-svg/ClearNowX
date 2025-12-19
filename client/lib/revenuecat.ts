@@ -7,7 +7,9 @@ import Purchases, {
   LOG_LEVEL,
 } from 'react-native-purchases';
 
-const REVENUECAT_API_KEY = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY || '';
+// iOS uses hardcoded API key, Android uses environment variable
+const REVENUECAT_API_KEY_IOS = 'appl_rlxZXnwWNKtxYCusnKnknNUKffe';
+const REVENUECAT_API_KEY_ANDROID = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY || '';
 const REVENUECAT_TEST_API_KEY = process.env.EXPO_PUBLIC_REVENUECAT_TEST_API_KEY || '';
 
 // Check if running in Expo Go
@@ -28,20 +30,29 @@ export const configurePurchases = async (): Promise<void> => {
     return;
   }
 
-  // Use Test API Key for Expo Go, Production key otherwise
-  const apiKey = isExpoGo ? REVENUECAT_TEST_API_KEY : REVENUECAT_API_KEY;
+  // Determine API key based on platform and environment
+  let apiKey = '';
+  
+  if (isExpoGo) {
+    apiKey = REVENUECAT_TEST_API_KEY;
+  } else if (Platform.OS === 'ios') {
+    apiKey = REVENUECAT_API_KEY_IOS;
+  } else {
+    apiKey = REVENUECAT_API_KEY_ANDROID;
+  }
   
   if (!apiKey) {
-    console.error('RevenueCat API key not configured. Please set EXPO_PUBLIC_REVENUECAT_API_KEY or EXPO_PUBLIC_REVENUECAT_TEST_API_KEY.');
+    console.error('RevenueCat API key not configured.');
     return;
   }
 
   try {
     // Use INFO level for production, reduce verbosity
     Purchases.setLogLevel(LOG_LEVEL.INFO);
+    console.log(`[RevenueCat] Configuring with API key: ${apiKey.substring(0, 20)}... on ${Platform.OS}`);
     await Purchases.configure({ apiKey });
     isConfigured = true;
-    console.log(`RevenueCat configured with ${isExpoGo ? 'Test Store' : 'Production'} API key`);
+    console.log(`RevenueCat configured with ${isExpoGo ? 'Test Store' : 'Production'} API key on ${Platform.OS}`);
   } catch (error) {
     console.error('Failed to configure RevenueCat:', error);
   }
