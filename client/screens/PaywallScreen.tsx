@@ -174,22 +174,36 @@ export default function PaywallScreen() {
       return;
     }
 
-    setIsLoading(true);
-    trackEvent("Subscribe Tapped", { plan: selectedPlan });
+    // Show helpful confirmation before purchase
+    Alert.alert(
+      "Confirm Subscription",
+      `You're about to subscribe to ${plan.title} for ${plan.price}${plan.period}.\n\nNext: You'll see a test payment screen. Click "Test Valid Purchase" to complete.\n\nNo real charge will be made.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Continue",
+          onPress: async () => {
+            if (!plan.package) return;
+            setIsLoading(true);
+            trackEvent("Subscribe Tapped", { plan: selectedPlan });
 
-    try {
-      const success = await purchase(plan.package);
-      if (success) {
-        trackEvent("Purchase Completed", { plan: selectedPlan });
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        navigation.replace("Results");
-      }
-    } catch (error) {
-      console.error("Purchase error:", error);
-      Alert.alert("Error", "Failed to complete purchase. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+            try {
+              const success = await purchase(plan.package);
+              if (success) {
+                trackEvent("Purchase Completed", { plan: selectedPlan });
+                await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                navigation.replace("Results");
+              }
+            } catch (error) {
+              console.error("Purchase error:", error);
+              Alert.alert("Error", "Failed to complete purchase. Please try again.");
+            } finally {
+              setIsLoading(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleRestore = async () => {
