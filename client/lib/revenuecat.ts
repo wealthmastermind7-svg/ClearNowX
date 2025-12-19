@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import Purchases, { 
   PurchasesPackage, 
   CustomerInfo,
@@ -7,20 +8,33 @@ import Purchases, {
 } from 'react-native-purchases';
 
 const REVENUECAT_API_KEY = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY || '';
+const REVENUECAT_TEST_API_KEY = process.env.EXPO_PUBLIC_REVENUECAT_TEST_API_KEY || '';
 const ENTITLEMENT_ID = 'premium_access';
+
+// Check if running in Expo Go
+const isExpoGo = Constants.appOwnership === 'expo';
 
 let isConfigured = false;
 
 export const configurePurchases = async (): Promise<void> => {
-  if (isConfigured || !REVENUECAT_API_KEY || Platform.OS === 'web') {
+  if (isConfigured || Platform.OS === 'web') {
+    return;
+  }
+
+  // Use Test API Key for Expo Go, Production key otherwise
+  const apiKey = isExpoGo ? REVENUECAT_TEST_API_KEY : REVENUECAT_API_KEY;
+  
+  if (!apiKey) {
+    console.error('RevenueCat API key not configured. Please set EXPO_PUBLIC_REVENUECAT_API_KEY or EXPO_PUBLIC_REVENUECAT_TEST_API_KEY.');
     return;
   }
 
   try {
     // Use INFO level for production, reduce verbosity
     Purchases.setLogLevel(LOG_LEVEL.INFO);
-    await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+    await Purchases.configure({ apiKey });
     isConfigured = true;
+    console.log(`RevenueCat configured with ${isExpoGo ? 'Test Store' : 'Production'} API key`);
   } catch (error) {
     console.error('Failed to configure RevenueCat:', error);
   }
