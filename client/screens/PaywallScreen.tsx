@@ -188,11 +188,21 @@ export default function PaywallScreen() {
             trackEvent("Subscribe Tapped", { plan: selectedPlan });
 
             try {
+              console.log("Starting purchase...");
               const success = await purchase(plan.package);
+              console.log("Purchase result:", success);
+              
+              // Add small delay to ensure RevenueCat dialog fully dismisses
+              await new Promise(resolve => setTimeout(resolve, 300));
+              
               if (success) {
                 trackEvent("Purchase Completed", { plan: selectedPlan });
                 await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                console.log("Navigating to Results...");
                 navigation.replace("Results");
+              } else {
+                console.log("Purchase was not successful");
+                Alert.alert("Error", "Purchase was not completed. Please try again.");
               }
             } catch (error) {
               console.error("Purchase error:", error);

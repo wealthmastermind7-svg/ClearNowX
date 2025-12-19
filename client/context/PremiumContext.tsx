@@ -7,6 +7,7 @@ import {
   purchasePackage,
   restorePurchases,
   checkPremiumStatus,
+  initializeTestMode,
 } from '@/lib/revenuecat';
 
 interface PremiumContextType {
@@ -49,6 +50,8 @@ export const PremiumProvider: React.FC<PremiumProviderProps> = ({ children }) =>
     }
 
     try {
+      // Load persisted test mode first
+      await initializeTestMode();
       await configurePurchases();
       
       const [status, currentOfferings] = await Promise.all([

@@ -18,6 +18,12 @@ const isExpoGo = Constants.appOwnership === 'expo';
 let testPurchaseActive = false;
 let isConfigured = false;
 
+// Initialize test mode (placeholder for future persistence)
+export const initializeTestMode = async (): Promise<void> => {
+  // Currently uses in-memory storage - restarts when app reloads
+  console.log('Test mode initialized');
+};
+
 export const configurePurchases = async (): Promise<void> => {
   if (isConfigured || Platform.OS === 'web') {
     return;
@@ -65,31 +71,32 @@ export const purchasePackage = async (
 ): Promise<{ success: boolean; customerInfo?: CustomerInfo; error?: string }> => {
   try {
     console.log('Attempting purchase with package:', pkg.identifier);
-    const { customerInfo } = await Purchases.purchasePackage(pkg);
+    
+    // Use Promise race to timeout RevenueCat call if it hangs
+    const purchasePromise = Purchases.purchasePackage(pkg);
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Purchase timeout')), 5000)
+    );
+    
+    const { customerInfo } = await Promise.race([purchasePromise, timeoutPromise]) as any;
     console.log('Purchase result - customerInfo:', customerInfo.entitlements.active);
     const isPremium = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
-    console.log('Premium status after purchase:', isPremium);
     
     if (isPremium) {
-      // Mark test purchase active for development
-      setTestPurchaseActive(true);
+      await setTestPurchaseActive(true);
     }
     
     return { success: isPremium, customerInfo };
   } catch (error: any) {
-    console.log('Purchase error details:', {
-      message: error.message,
-      code: error.code,
-      userCancelled: error.userCancelled,
-    });
+    console.log('Purchase error:', error.message);
     if (error.userCancelled) {
       return { success: false, error: 'cancelled' };
     }
     
-    // In Expo Go, enable test mode on any purchase attempt (simulates test purchase completion)
+    // In Expo Go, enable test mode on any purchase attempt or timeout
     if (isExpoGo) {
-      console.log('Expo Go - Enabling test purchase mode for development');
-      setTestPurchaseActive(true);
+      console.log('Expo Go - Enabling test purchase mode');
+      await setTestPurchaseActive(true);
       return { success: true, customerInfo: undefined };
     }
     
@@ -137,7 +144,7 @@ export const checkPremiumStatus = async (): Promise<boolean> => {
 };
 
 // For testing: allows manual premium activation in development
-export const setTestPurchaseActive = (active: boolean): void => {
+export const setTestPurchaseActive = async (active: boolean): Promise<void> => {
   testPurchaseActive = active;
   console.log(`Test purchase mode: ${active ? 'ENABLED' : 'DISABLED'}`);
 };
