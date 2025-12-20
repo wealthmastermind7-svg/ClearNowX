@@ -227,6 +227,11 @@ export default function ResultsScreen() {
     navigation.navigate("Paywall");
   };
 
+  const handleScanAgain = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.replace("Scan");
+  };
+
   if (loading) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
@@ -237,10 +242,20 @@ export default function ResultsScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={[styles.header, { paddingTop: insets.top }]}>
+        <ThemedText style={styles.headerTitle}>Storage Analysis</ThemedText>
+        <Pressable onPress={handleScanAgain}>
+          <View style={styles.scanButton}>
+            <Feather name="refresh-cw" size={18} color={Colors.textPrimary} />
+            <ThemedText style={styles.scanButtonText}>Scan Again</ThemedText>
+          </View>
+        </Pressable>
+      </View>
+
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingTop: insets.top + Spacing["3xl"], paddingBottom: insets.bottom + Spacing["2xl"] },
+          { paddingTop: Spacing["3xl"], paddingBottom: insets.bottom + Spacing["2xl"] },
         ]}
         showsVerticalScrollIndicator={false}
       >
@@ -300,9 +315,12 @@ export default function ResultsScreen() {
               style={styles.unlockButton}
             />
           ) : (
-            <ThemedText style={styles.premiumText}>
-              Tap a category to preview and delete files
-            </ThemedText>
+            <View style={styles.instructionContainer}>
+              <ThemedText style={styles.instructionLabel}>What to do next:</ThemedText>
+              <ThemedText style={styles.instructionText}>
+                Select any category above to view files
+              </ThemedText>
+            </View>
           )}
 
           <ThemedText style={styles.disclaimer}>
@@ -320,6 +338,35 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255, 255, 255, 0.05)",
+  },
+  headerTitle: {
+    ...Typography.h3,
+    color: Colors.textPrimary,
+  },
+  scanButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    backgroundColor: "rgba(125, 249, 255, 0.1)",
+    borderWidth: 1,
+    borderColor: "rgba(125, 249, 255, 0.2)",
+    gap: Spacing.sm,
+  },
+  scanButtonText: {
+    ...Typography.small,
+    color: Colors.textPrimary,
+    fontWeight: "500",
   },
   loadingContainer: {
     justifyContent: "center",
@@ -412,6 +459,21 @@ const styles = StyleSheet.create({
   premiumText: {
     ...Typography.body,
     color: Colors.accent,
+    textAlign: "center",
+  },
+  instructionContainer: {
+    alignItems: "center",
+    marginBottom: Spacing.lg,
+  },
+  instructionLabel: {
+    ...Typography.small,
+    color: Colors.textTertiary,
+    textTransform: "uppercase",
+    marginBottom: Spacing.xs,
+  },
+  instructionText: {
+    ...Typography.body,
+    color: Colors.textSecondary,
     textAlign: "center",
   },
   disclaimer: {
