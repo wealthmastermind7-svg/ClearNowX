@@ -47,6 +47,7 @@ interface MediaAsset {
   width: number;
   height: number;
   fileSize?: number;
+  creationTime?: number; // Timestamp in milliseconds
   selected: boolean;
   groupKey?: string; // For grouping duplicates by dimension
 }
@@ -114,12 +115,13 @@ function findLargeVideos(assets: MediaAsset[]): MediaAsset[] {
     .slice(0, 50);
 }
 
-// Finds old downloads (files that haven't been accessed recently)
+// Finds old downloads (files created more than 30 days ago)
 function findOldDownloads(assets: MediaAsset[]): MediaAsset[] {
   const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
   
   return assets
-    .sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0))
+    .filter((a) => (a.creationTime || 0) < thirtyDaysAgo)
+    .sort((a, b) => (a.creationTime || 0) - (b.creationTime || 0)) // Oldest first
     .slice(0, 50);
 }
 
@@ -255,6 +257,7 @@ export default function FilePreviewScreen() {
               width: asset.width || 0,
               height: asset.height || 0,
               fileSize: (info as any).size ?? estimatedSize ?? 3 * 1024 * 1024,
+              creationTime: asset.creationTime || Date.now(),
               selected: false,
             };
           } catch (e) {
