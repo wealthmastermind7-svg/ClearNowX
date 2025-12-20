@@ -64,6 +64,41 @@ function formatDuration(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
+// Detects potential duplicate photos based on dimensions and metadata
+function findDuplicatePhotos(assets: MediaAsset[]): MediaAsset[] {
+  const photos = assets.filter((a) => a.mediaType === "photo");
+  
+  // Group photos by dimension
+  const dimensionMap = new Map<string, MediaAsset[]>();
+  
+  photos.forEach((photo) => {
+    const key = `${photo.width}x${photo.height}`;
+    if (!dimensionMap.has(key)) {
+      dimensionMap.set(key, []);
+    }
+    dimensionMap.get(key)!.push(photo);
+  });
+  
+  // Get all photos from groups with 2+ photos (potential duplicates)
+  const duplicates: MediaAsset[] = [];
+  dimensionMap.forEach((group) => {
+    if (group.length >= 2) {
+      // Sort by size (descending) to show larger duplicates first
+      group.sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0));
+      duplicates.push(...group);
+    }
+  });
+  
+  // If no duplicates found by dimension, return largest photos as fallback
+  if (duplicates.length === 0) {
+    return photos
+      .sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0))
+      .slice(0, 50);
+  }
+  
+  return duplicates.slice(0, 50);
+}
+
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const NUM_COLUMNS = 3;
 const ITEM_MARGIN = 4;
@@ -200,9 +235,7 @@ export default function FilePreviewScreen() {
           .filter((a) => a.mediaType === "video" && a.duration > 10)
           .slice(0, 50);
       } else if (category === "Duplicate Photos") {
-        filteredAssets = validAssets
-          .filter((a) => a.mediaType === "photo")
-          .slice(0, 50);
+        filteredAssets = findDuplicatePhotos(validAssets);
       } else if (category === "Old Downloads") {
         filteredAssets = validAssets.slice(0, 50);
       } else if (category === "Unnecessary Files") {
