@@ -99,6 +99,30 @@ function findDuplicatePhotos(assets: MediaAsset[]): MediaAsset[] {
   return duplicates.slice(0, 50);
 }
 
+// Finds large videos (duration > 10s) and sorts by file size
+function findLargeVideos(assets: MediaAsset[]): MediaAsset[] {
+  return assets
+    .filter((a) => a.mediaType === "video" && a.duration > 10)
+    .sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0))
+    .slice(0, 50);
+}
+
+// Finds old downloads (files that haven't been accessed recently)
+function findOldDownloads(assets: MediaAsset[]): MediaAsset[] {
+  const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+  
+  return assets
+    .sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0))
+    .slice(0, 50);
+}
+
+// Finds unnecessary files sorted by size (largest first)
+function findUnnecessaryFiles(assets: MediaAsset[]): MediaAsset[] {
+  return assets
+    .sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0))
+    .slice(0, 50);
+}
+
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const NUM_COLUMNS = 3;
 const ITEM_MARGIN = 4;
@@ -231,17 +255,13 @@ export default function FilePreviewScreen() {
       let filteredAssets = validAssets;
 
       if (category === "Large Videos") {
-        filteredAssets = validAssets
-          .filter((a) => a.mediaType === "video" && a.duration > 10)
-          .slice(0, 50);
+        filteredAssets = findLargeVideos(validAssets);
       } else if (category === "Duplicate Photos") {
         filteredAssets = findDuplicatePhotos(validAssets);
       } else if (category === "Old Downloads") {
-        filteredAssets = validAssets.slice(0, 50);
+        filteredAssets = findOldDownloads(validAssets);
       } else if (category === "Unnecessary Files") {
-        filteredAssets = validAssets
-          .sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0))
-          .slice(0, 50);
+        filteredAssets = findUnnecessaryFiles(validAssets);
       }
 
       console.log(`Showing ${filteredAssets.length} filtered assets`);
