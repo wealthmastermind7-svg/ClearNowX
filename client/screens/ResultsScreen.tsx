@@ -68,10 +68,9 @@ export default function ResultsScreen() {
     try {
       if (Platform.OS === "web") {
         setStorageData([
-          { id: "1", icon: "image", title: "Duplicate Photos", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
-          { id: "2", icon: "video", title: "Large Videos", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
-          { id: "3", icon: "file", title: "Old Downloads", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
-          { id: "4", icon: "trash-2", title: "Unnecessary Files", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
+          { id: "1", icon: "video", title: "Large Videos", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
+          { id: "2", icon: "file", title: "Old Downloads", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
+          { id: "3", icon: "trash-2", title: "Unnecessary Files", size: "Run in Expo Go", count: "Use device", fileCount: 0 },
         ]);
         setTotalReclaimable("Use Expo Go");
         setLoading(false);
@@ -133,14 +132,6 @@ export default function ResultsScreen() {
       const categories: StorageCategory[] = [
         {
           id: "1",
-          icon: "image",
-          title: "Duplicate Photos",
-          size: formatBytes(estimatedPhotoSize),
-          count: `${Math.floor(photos.totalCount * 0.3)} potential duplicates`,
-          fileCount: Math.floor(photos.totalCount * 0.3),
-        },
-        {
-          id: "2",
           icon: "video",
           title: "Large Videos",
           size: formatBytes(estimatedVideoSize),
@@ -148,7 +139,7 @@ export default function ResultsScreen() {
           fileCount: largeVideos.length,
         },
         {
-          id: "3",
+          id: "2",
           icon: "file",
           title: "Old Downloads",
           size: formatBytes(estimatedDownloadsSize),
@@ -156,11 +147,11 @@ export default function ResultsScreen() {
           fileCount: Math.floor(photos.totalCount * 0.15),
         },
         {
-          id: "4",
+          id: "3",
           icon: "trash-2",
           title: "Unnecessary Files",
           size: formatBytes(estimatedCacheSize),
-          count: "Large items & duplicates",
+          count: "Large items & cache",
           fileCount: 0,
         },
       ];

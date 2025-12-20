@@ -134,7 +134,7 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 const ITEM_MARGIN = 4;
 
 function getNumColumns(category: string): number {
-  return category === "Duplicate Photos" ? 2 : 3;
+  return 3;
 }
 
 function getItemSize(category: string): number {
@@ -270,8 +270,6 @@ export default function FilePreviewScreen() {
 
       if (category === "Large Videos") {
         filteredAssets = findLargeVideos(validAssets);
-      } else if (category === "Duplicate Photos") {
-        filteredAssets = findDuplicatePhotos(validAssets);
       } else if (category === "Old Downloads") {
         filteredAssets = findOldDownloads(validAssets);
       } else if (category === "Unnecessary Files") {
