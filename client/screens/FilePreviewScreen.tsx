@@ -48,6 +48,13 @@ interface MediaAsset {
   height: number;
   fileSize?: number;
   selected: boolean;
+  groupKey?: string; // For grouping duplicates by dimension
+}
+
+interface DuplicateGroup {
+  key: string; // "1920x1080"
+  count: number;
+  assets: MediaAsset[];
 }
 
 function formatFileSize(bytes: number): string {
@@ -81,11 +88,12 @@ function findDuplicatePhotos(assets: MediaAsset[]): MediaAsset[] {
   
   // Get all photos from groups with 2+ photos (potential duplicates)
   const duplicates: MediaAsset[] = [];
-  dimensionMap.forEach((group) => {
+  dimensionMap.forEach((group, key) => {
     if (group.length >= 2) {
       // Sort by size (descending) to show larger duplicates first
       group.sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0));
-      duplicates.push(...group);
+      // Add groupKey to each asset to track which group it belongs to
+      duplicates.push(...group.map(a => ({ ...a, groupKey: key })));
     }
   });
   
@@ -93,7 +101,8 @@ function findDuplicatePhotos(assets: MediaAsset[]): MediaAsset[] {
   if (duplicates.length === 0) {
     return photos
       .sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0))
-      .slice(0, 50);
+      .slice(0, 50)
+      .map(a => ({ ...a, groupKey: "none" }));
   }
   
   return duplicates.slice(0, 50);
@@ -124,9 +133,16 @@ function findUnnecessaryFiles(assets: MediaAsset[]): MediaAsset[] {
 }
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const NUM_COLUMNS = 3;
 const ITEM_MARGIN = 4;
-const ITEM_SIZE = (SCREEN_WIDTH - (Spacing.md * 2) - (ITEM_MARGIN * (NUM_COLUMNS - 1))) / NUM_COLUMNS;
+
+function getNumColumns(category: string): number {
+  return category === "Duplicate Photos" ? 2 : 3;
+}
+
+function getItemSize(category: string): number {
+  const numColumns = getNumColumns(category);
+  return (SCREEN_WIDTH - (Spacing.md * 2) - (ITEM_MARGIN * (numColumns - 1))) / numColumns;
+}
 
 export default function FilePreviewScreen() {
   const navigation = useNavigation<FilePreviewScreenNavigationProp>();
@@ -362,11 +378,17 @@ export default function FilePreviewScreen() {
     opacity: headerOpacity.value,
   }));
 
-  const renderAsset = ({ item, index }: { item: MediaAsset; index: number }) => (
+  const renderAsset = ({ item, index }: { item: MediaAsset; index: number }) => {
+    const itemSize = getItemSize(category);
+    return (
     <Animated.View entering={FadeIn.delay(index * 50).duration(300)}>
       <Pressable
         onPress={() => toggleAssetSelection(item.id)}
-        style={[styles.assetItem, item.selected && styles.assetItemSelected]}
+        style={[
+          styles.assetItem,
+          { width: itemSize, height: itemSize },
+          item.selected && styles.assetItemSelected
+        ]}
       >
         <Image
           source={{ uri: item.uri }}
@@ -400,7 +422,8 @@ export default function FilePreviewScreen() {
         )}
       </Pressable>
     </Animated.View>
-  );
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -495,7 +518,7 @@ export default function FilePreviewScreen() {
             data={assets}
             renderItem={renderAsset}
             keyExtractor={(item) => item.id}
-            numColumns={3}
+            numColumns={getNumColumns(category)}
             contentContainerStyle={[
               styles.gridContainer,
               { paddingBottom: insets.bottom + 120 },
@@ -656,8 +679,6 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
   },
   assetItem: {
-    width: ITEM_SIZE,
-    height: ITEM_SIZE,
     marginRight: ITEM_MARGIN,
     marginBottom: ITEM_MARGIN,
     borderRadius: BorderRadius.md,
