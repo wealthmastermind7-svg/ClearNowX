@@ -71,41 +71,39 @@ function formatDuration(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
-// Detects potential duplicate photos based on dimensions and metadata
+// Detects actual duplicate photos based on dimensions AND file size
 function findDuplicatePhotos(assets: MediaAsset[]): MediaAsset[] {
   const photos = assets.filter((a) => a.mediaType === "photo");
   
-  // Group photos by dimension
-  const dimensionMap = new Map<string, MediaAsset[]>();
+  // Group photos by dimension AND file size (actual duplicates)
+  const duplicateMap = new Map<string, MediaAsset[]>();
   
   photos.forEach((photo) => {
-    const key = `${photo.width}x${photo.height}`;
-    if (!dimensionMap.has(key)) {
-      dimensionMap.set(key, []);
+    // Key includes both dimensions AND file size for true duplicate detection
+    const key = `${photo.width}x${photo.height}x${photo.fileSize || 0}`;
+    if (!duplicateMap.has(key)) {
+      duplicateMap.set(key, []);
     }
-    dimensionMap.get(key)!.push(photo);
+    duplicateMap.get(key)!.push(photo);
   });
   
-  // Get all photos from groups with 2+ photos (potential duplicates)
+  // Get all photos from groups with 2+ identical files (actual duplicates)
   const duplicates: MediaAsset[] = [];
-  dimensionMap.forEach((group, key) => {
+  duplicateMap.forEach((group, key) => {
     if (group.length >= 2) {
-      // Sort by size (descending) to show larger duplicates first
-      group.sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0));
+      // Sort by filename to show related duplicates together
+      group.sort((a, b) => a.filename.localeCompare(b.filename));
       // Add groupKey to each asset to track which group it belongs to
       duplicates.push(...group.map(a => ({ ...a, groupKey: key })));
     }
   });
   
-  // If no duplicates found by dimension, return largest photos as fallback
+  // If no actual duplicates found, return empty state
   if (duplicates.length === 0) {
-    return photos
-      .sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0))
-      .slice(0, 50)
-      .map(a => ({ ...a, groupKey: "none" }));
+    return [];
   }
   
-  return duplicates.slice(0, 50);
+  return duplicates;
 }
 
 // Finds large videos (duration > 10s) and sorts by file size
